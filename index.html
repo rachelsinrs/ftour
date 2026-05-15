@@ -154,6 +154,15 @@
             border: none;
             cursor: pointer;
         }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--text-sub);
+        }
+
+        .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+        .empty-state p { font-size: 15px; font-weight: 500; }
     </style>
 </head>
 <body>
@@ -161,14 +170,14 @@
         <header>
             <div class="logo">FTour</div>
             <div class="tabs">
-                <div class="tab">未來行程</div>
-                <div class="tab active">紀錄</div>
+                <div class="tab" onclick="switchTab('upcoming')">未來行程</div>
+                <div class="tab active" onclick="switchTab('records')">紀錄</div>
             </div>
         </header>
 
         <div id="app-content" class="content">
             <div class="stats-card">
-                <h3>總參與場次</h3>
+                <h3 id="stats-label">總參與場次</h3>
                 <div id="total-count" class="count">--</div>
                 <p style="font-size: 12px; opacity: 0.8;">資料同步自 Google Sheets</p>
             </div>
@@ -186,11 +195,23 @@
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbw5YreMxTtQyaTU6CFZhxIoi5dtknHZQhYL2Wuy023FA3vASFICJCx9u0ULiiVCG9o/exec";
 
+        let allConcerts = [];
+        let currentTab = 'records';
+
+        function switchTab(tab) {
+            currentTab = tab;
+            const tabs = document.querySelectorAll('.tab');
+            tabs[0].classList.toggle('active', tab === 'upcoming');
+            tabs[1].classList.toggle('active', tab === 'records');
+            renderList(allConcerts);
+        }
+
         async function fetchConcerts() {
             try {
                 const response = await fetch(API_URL);
                 const data = await response.json();
-                renderList(data);
+                allConcerts = data;
+                renderList(allConcerts);
             } catch (error) {
                 document.getElementById('list-container').innerHTML = '<div class="loading-state">載入失敗，請檢查網路或 API 權限</div>';
                 console.error("Fetch error:", error);
@@ -200,17 +221,37 @@
         function renderList(items) {
             const container = document.getElementById('list-container');
             const totalDisplay = document.getElementById('total-count');
-            
-            // Sort by date descending
-            items.sort((a, b) => new Date(b.Date) - new Date(a.Date));
-            
-            totalDisplay.textContent = items.length + " 場";
+            const statsLabel = document.getElementById('stats-label');
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            let filtered;
+            if (currentTab === 'upcoming') {
+                filtered = items.filter(i => new Date(i.Date) >= today);
+                filtered.sort((a, b) => new Date(a.Date) - new Date(b.Date));
+                statsLabel.textContent = '即將到來的場次';
+            } else {
+                filtered = items.filter(i => new Date(i.Date) < today);
+                filtered.sort((a, b) => new Date(b.Date) - new Date(a.Date));
+                statsLabel.textContent = '總參與場次';
+            }
+
+            totalDisplay.textContent = filtered.length + " 場";
             container.innerHTML = "";
 
-            items.forEach(item => {
+            if (filtered.length === 0) {
+                const emptyMsg = currentTab === 'upcoming'
+                    ? '<div class="empty-state"><div class="icon">🎵</div><p>目前沒有未來行程</p></div>'
+                    : '<div class="empty-state"><div class="icon">🎤</div><p>還沒有演唱會紀錄</p></div>';
+                container.innerHTML = emptyMsg;
+                return;
+            }
+
+            const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+
+            filtered.forEach(item => {
                 const dateObj = new Date(item.Date);
-                const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-                
                 const card = `
                     <div class="concert-card">
                         <div class="date-box">
