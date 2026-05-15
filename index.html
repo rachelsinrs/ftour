@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FTour v4 - My Concert Journal</title>
+    <title>FTour v5 - My Concert App</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&family=Noto+Sans+TC:wght@400;500;700&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&family=Caveat:wght@600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+
         :root {
             --primary: #6366f1;
             --bg-page: #f8fafc;
@@ -17,12 +17,28 @@
             --border: #e2e8f0;
             --radius: 20px;
             --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            /* Planner semantic tokens */
+            --color-background-primary: #ffffff;
+            --color-background-secondary: #f8fafc;
+            --color-background-tertiary: #f1f5f9;
+            --color-text-primary: #1e293b;
+            --color-text-secondary: #64748b;
+            --color-text-tertiary: #94a3b8;
+            --color-border-secondary: #e2e8f0;
+            --color-border-tertiary: #e2e8f0;
+            --border-radius-lg: 20px;
+            --color-background-info: #ede9fe;
+            --color-text-info: #7c3aed;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            background-color: var(--bg-page); 
-            font-family: 'Noto Sans TC', sans-serif; 
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.2); border-radius: 2px; }
+        input[type=datetime-local]::-webkit-calendar-picker-indicator { opacity: 0.4; }
+
+        body {
+            background-color: var(--bg-page);
+            font-family: 'Noto Sans TC', sans-serif;
             color: var(--text-main);
             display: flex;
             justify-content: center;
@@ -30,6 +46,7 @@
             min-height: 100vh;
         }
 
+        /* ── Phone shell ── */
         .phone-container {
             width: 100%;
             max-width: 390px;
@@ -44,10 +61,12 @@
             flex-direction: column;
         }
 
+        /* ── Main Header ── */
         header {
-            padding: 40px 24px 16px;
+            padding: 36px 24px 0;
             background: white;
             border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
         }
 
         .logo {
@@ -58,46 +77,51 @@
             letter-spacing: -1px;
         }
 
-        .tabs {
+        .main-tabs {
             display: flex;
             gap: 24px;
-            margin-top: 20px;
+            margin-top: 14px;
         }
 
-        .tab {
+        .main-tab {
             font-size: 15px;
             font-weight: 700;
             color: var(--text-sub);
-            padding-bottom: 8px;
+            padding-bottom: 10px;
             cursor: pointer;
             border-bottom: 3px solid transparent;
-            transition: all 0.3s;
+            transition: all 0.25s;
+            background: none;
+            border-left: none;
+            border-right: none;
+            border-top: none;
+            font-family: 'Noto Sans TC', sans-serif;
         }
 
-        .tab.active {
+        .main-tab.active {
             color: var(--primary);
             border-bottom-color: var(--primary);
         }
 
+        /* ── Journal view ── */
         .content {
             flex: 1;
             overflow-y: auto;
-            padding: 24px;
-            padding-bottom: 100px;
+            padding: 20px 20px 90px;
             scroll-behavior: smooth;
         }
 
         .stats-card {
             background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            padding: 24px;
+            padding: 22px;
             border-radius: var(--radius);
             color: white;
-            margin-bottom: 24px;
-            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+            margin-bottom: 20px;
+            box-shadow: 0 10px 15px -3px rgba(99,102,241,0.3);
         }
 
-        .stats-card h3 { font-size: 14px; opacity: 0.9; font-weight: 500; }
-        .stats-card .count { font-size: 40px; font-weight: 800; margin: 4px 0; }
+        .stats-card h3 { font-size: 13px; opacity: 0.9; font-weight: 500; }
+        .stats-card .count { font-size: 38px; font-weight: 800; margin: 4px 0; }
 
         .loading-state {
             text-align: center;
@@ -105,132 +129,932 @@
             color: var(--text-sub);
         }
 
-        .concert-card {
+        .journal-card {
             background: white;
-            padding: 16px;
+            padding: 14px;
             border-radius: var(--radius);
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             border: 1px solid var(--border);
             display: flex;
-            gap: 16px;
+            gap: 14px;
             transition: transform 0.2s;
             box-shadow: var(--shadow);
         }
 
-        .concert-card:active { transform: scale(0.98); }
+        .journal-card:active { transform: scale(0.98); }
 
         .date-box {
-            min-width: 56px;
+            min-width: 54px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             background: #f1f5f9;
             border-radius: 12px;
-            height: 56px;
+            height: 54px;
         }
 
         .date-box .month { font-size: 11px; font-weight: 800; color: var(--primary); }
         .date-box .day { font-size: 20px; font-weight: 800; }
 
         .info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-        .info .title { font-size: 15px; font-weight: 700; margin-bottom: 4px; line-height: 1.2; }
-        .info .venue { font-size: 13px; color: var(--text-sub); display: flex; align-items: center; gap: 4px; }
+        .info .title { font-size: 14px; font-weight: 700; margin-bottom: 4px; line-height: 1.2; }
+        .info .venue { font-size: 12px; color: var(--text-sub); display: flex; align-items: center; gap: 4px; }
 
+        /* ── Planner view ── */
+        .planner-view {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--color-background-primary);
+        }
+
+        .planner-subhdr {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-bottom: 0.5px solid var(--color-border-tertiary);
+            background: var(--color-background-primary);
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+
+        .proj-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--color-border-secondary);
+            background: var(--color-background-secondary);
+            color: var(--color-text-primary);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            max-width: 175px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .gmail-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 8px;
+            border: 1px solid var(--color-border-tertiary);
+            background: transparent;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            font-size: 11px;
+            margin-left: auto;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .tabs-sm { display: flex; }
+        .tab-sm {
+            padding: 5px 12px;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        .tab-sm.on { border-bottom-color: #7c3aed; color: #7c3aed; }
+
+        /* Status filter */
+        .status-bar {
+            display: flex;
+            gap: 6px;
+            padding: 8px 14px;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+            background: white;
+            border-bottom: 0.5px solid var(--color-border-tertiary);
+        }
+
+        .status-chip {
+            padding: 4px 11px;
+            border-radius: 20px;
+            border: 1px solid var(--color-border-tertiary);
+            background: var(--color-background-secondary);
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        .status-chip.on { color: #fff; }
+        .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+
+        /* Countdown */
+        .cd-card {
+            margin: 10px 14px 0;
+            padding: 13px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--color-border-tertiary);
+            background: var(--color-background-secondary);
+            flex-shrink: 0;
+        }
+
+        .cd-artist { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2px; }
+        .cd-name { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+        .cd-venue { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 10px; display: flex; align-items: center; gap: 4px; }
+        .tz-pill { font-size: 9px; padding: 2px 5px; border-radius: 4px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); color: var(--color-text-tertiary); }
+        .cd-nums { display: flex; gap: 10px; }
+        .cd-unit { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+        .cd-n { font-size: 28px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+        .cd-l { font-size: 9px; color: var(--color-text-secondary); }
+
+        /* Hotel banner */
+        .hotel-banner {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 8px 14px 0;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--color-border-tertiary);
+            background: var(--color-background-secondary);
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .hotel-name { font-weight: 600; flex: 1; }
+        .hotel-dates { font-size: 11px; color: var(--color-text-secondary); }
+        .gmail-tag { font-size: 9px; padding: 2px 5px; background: #fff3e6; color: #9a3412; border-radius: 3px; font-weight: 600; border: 0.5px solid #fed7aa; }
+
+        /* Planner main */
+        .planner-main {
+            flex: 1;
+            padding: 14px 14px 80px;
+            overflow-y: auto;
+        }
+
+        /* Timeline */
+        .tl-row { display: flex; margin-bottom: 4px; }
+        .tl-left { width: 56px; min-width: 56px; text-align: right; padding-right: 10px; padding-top: 7px; }
+        .tl-date { font-size: 10px; color: var(--color-text-tertiary); line-height: 1.4; }
+        .tl-time { font-size: 12px; font-weight: 700; color: var(--color-text-secondary); line-height: 1.4; }
+        .tl-tzl { font-size: 9px; font-weight: 600; }
+        .tl-axis { display: flex; flex-direction: column; align-items: center; width: 22px; min-width: 22px; }
+        .tl-dot { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; margin-top: 6px; font-size: 9px; }
+        .tl-line { flex: 1; width: 0; min-height: 10px; border-left: 1.5px dashed var(--color-border-tertiary); margin-top: 3px; }
+        .tl-card { flex: 1; margin-left: 10px; margin-bottom: 10px; padding: 9px 12px; border-radius: 10px; border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-secondary); }
+        .card-top { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+        .type-pill { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 20px; letter-spacing: .3px; }
+        .card-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+        .card-detail { display: flex; flex-wrap: wrap; gap: 3px 10px; margin-top: 3px; font-size: 11px; color: var(--color-text-secondary); align-items: center; }
+        .card-note { font-size: 11px; color: var(--color-text-tertiary); margin-top: 2px; }
+        .icon-btn { background: none; border: none; cursor: pointer; color: var(--color-text-tertiary); padding: 3px; border-radius: 4px; display: flex; align-items: center; font-size: 14px; }
+
+        /* Day Selector */
+        .day-sel { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 12px; }
+        .day-tab { min-width: 50px; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--color-border-tertiary); cursor: pointer; text-align: center; background: var(--color-background-secondary); color: var(--color-text-secondary); flex-shrink: 0; font-family: 'Noto Sans TC', sans-serif; }
+        .day-tab.on { border-width: 1.5px; }
+
+        /* Highlight card */
+        .hl-card { padding: 12px 14px; border-radius: 10px; border: 1px solid var(--color-border-tertiary); background: var(--color-background-secondary); margin-bottom: 12px; }
+        .hl-title { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 7px; color: var(--color-text-secondary); }
+        .hl-row { display: flex; align-items: center; gap: 7px; margin-top: 5px; font-size: 12px; }
+
+        /* Agenda */
+        .ag-label { font-size: 10px; color: var(--color-text-tertiary); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+        .ag-row { display: flex; gap: 0; margin-bottom: 8px; }
+        .ag-time { width: 46px; min-width: 46px; text-align: right; padding-right: 8px; padding-top: 8px; font-size: 11px; font-weight: 600; color: var(--color-text-secondary); }
+        .ag-bar { width: 3px; min-width: 3px; border-radius: 3px; margin: 6px 8px 0; }
+        .ag-card { flex: 1; padding: 8px 11px; border-radius: 8px; border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-primary); }
+        .ag-row-inner { display: flex; align-items: center; gap: 6px; }
+        .ag-sub { font-size: 11px; color: var(--color-text-tertiary); margin-top: 3px; padding-left: 18px; }
+
+        /* FAB */
         .fab {
             position: absolute;
-            bottom: 40px;
-            right: 24px;
-            width: 60px;
-            height: 60px;
-            background: var(--primary);
-            border-radius: 30px;
-            color: white;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #7c3aed;
+            border: none;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.4);
-            font-size: 28px;
-            border: none;
-            cursor: pointer;
+            color: #fff;
+            font-size: 24px;
+            box-shadow: 0 4px 14px rgba(124,58,237,0.4);
+            z-index: 50;
+            transition: transform 0.15s;
         }
+        .fab:active { transform: scale(0.92); }
+
+        /* Dropdown */
+        .dd { position: absolute; top: calc(100% + 6px); left: 0; background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: 10px; min-width: 210px; z-index: 200; box-shadow: 0 10px 30px rgba(0,0,0,0.15); overflow: hidden; }
+        .dd-lbl { padding: 8px 12px 4px; font-size: 10px; color: var(--color-text-tertiary); letter-spacing: 1.2px; text-transform: uppercase; }
+        .dd-row { display: flex; align-items: center; padding: 2px 6px; }
+        .dd-item { flex: 1; background: none; border: none; padding: 6px 7px; cursor: pointer; text-align: left; font-size: 12px; font-weight: 500; border-radius: 5px; font-family: 'Noto Sans TC', sans-serif; color: var(--color-text-primary); }
+        .dd-add { width: 100%; display: flex; align-items: center; gap: 6px; padding: 9px 12px; background: var(--color-background-info); border: none; border-top: 0.5px solid var(--color-border-tertiary); color: var(--color-text-info); cursor: pointer; font-size: 12px; font-weight: 600; font-family: 'Noto Sans TC', sans-serif; }
+
+        /* Modals */
+        .overlay { position: absolute; inset: 0; z-index: 100; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; padding: 12px; }
+        .modal { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 18px; width: 100%; max-height: 96%; overflow-y: auto; }
+        .modal-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .modal-title { font-family: 'Caveat', cursive; font-size: 20px; font-weight: 700; color: #7c3aed; }
+        .field-label { display: block; font-size: 10px; color: var(--color-text-secondary); margin-bottom: 4px; letter-spacing: .8px; text-transform: uppercase; }
+        .field-input { display: block; width: 100%; padding: 8px 10px; border-radius: 8px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-secondary); color: var(--color-text-primary); font-size: 13px; margin-bottom: 10px; outline: none; font-family: 'Noto Sans TC', sans-serif; }
+        .type-row { display: flex; gap: 5px; margin-bottom: 12px; }
+        .type-btn { flex: 1; padding: 7px 3px; border-radius: 7px; border: 1px solid transparent; cursor: pointer; font-size: 11px; font-weight: 700; background: var(--color-background-secondary); color: var(--color-text-secondary); font-family: 'Noto Sans TC', sans-serif; }
+        .save-btn { width: 100%; padding: 10px; border: none; border-radius: 8px; background: #7c3aed; color: #fff; cursor: pointer; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 4px; font-family: 'Noto Sans TC', sans-serif; }
+        .row2 { display: flex; gap: 8px; }
+        .row2 > div { flex: 1; }
+        .search-inp { width: 100%; padding: 9px 10px 9px 32px; border-radius: 8px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-secondary); color: var(--color-text-primary); font-size: 13px; outline: none; font-family: 'Noto Sans TC', sans-serif; margin-bottom: 10px; }
+        .concert-result { display: flex; align-items: center; gap: 10px; padding: 9px 11px; border-radius: 8px; border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-secondary); cursor: pointer; width: 100%; text-align: left; margin-bottom: 6px; }
+
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
     </style>
 </head>
 <body>
-    <div class="phone-container">
-        <header>
-            <div class="logo">FTour</div>
-            <div class="tabs">
-                <div class="tab">未來行程</div>
-                <div class="tab active">紀錄</div>
-            </div>
-        </header>
+<div class="phone-container">
 
-        <div id="app-content" class="content">
-            <div class="stats-card">
-                <h3>總參與場次</h3>
-                <div id="total-count" class="count">--</div>
-                <p style="font-size: 12px; opacity: 0.8;">資料同步自 Google Sheets</p>
-            </div>
+    <!-- ── Main Header ── -->
+    <header>
+        <div class="logo">FTour</div>
+        <div class="main-tabs">
+            <button class="main-tab" id="main-tab-plan" onclick="switchMainTab('plan')">未來行程</button>
+            <button class="main-tab active" id="main-tab-journal" onclick="switchMainTab('journal')">紀錄</button>
+        </div>
+    </header>
 
-            <div id="list-container">
-                <div class="loading-state">載入紀錄中...</div>
+    <!-- ════════════════════════════════════
+         PLANNER VIEW
+    ════════════════════════════════════ -->
+    <div id="view-plan" class="planner-view" style="display:none">
+
+        <!-- Sub-header: project picker + Gmail + inner tabs -->
+        <div class="planner-subhdr">
+            <div style="position:relative" id="proj-wrap">
+                <button class="proj-btn" onclick="toggleDD()">
+                    <span id="proj-label">💜 BTS — 橫濱</span>
+                    <i class="ti ti-chevron-down" style="font-size:12px" aria-hidden="true"></i>
+                </button>
+                <div class="dd" id="dd" style="display:none">
+                    <div class="dd-lbl">我的行程</div>
+                    <div class="dd-row">
+                        <button class="dd-item" style="color:#7c3aed" onclick="switchConcert(0)">💜 BTS Yet To Come — 橫濱</button>
+                        <button class="icon-btn" onclick="event.stopPropagation()"><i class="ti ti-trash" aria-label="刪除"></i></button>
+                    </div>
+                    <div class="dd-row">
+                        <button class="dd-item" style="color:#db2777" onclick="switchConcert(1)">🖤 BLACKPINK — 首爾</button>
+                        <button class="icon-btn" onclick="event.stopPropagation()"><i class="ti ti-trash" aria-label="刪除"></i></button>
+                    </div>
+                    <div class="dd-row">
+                        <button class="dd-item" style="color:#0891b2" onclick="switchConcert(2)">🌙 TXT — 新加坡</button>
+                        <button class="icon-btn" onclick="event.stopPropagation()"><i class="ti ti-trash" aria-label="刪除"></i></button>
+                    </div>
+                    <button class="dd-add" onclick="openConcertSearch()">
+                        <i class="ti ti-search" aria-hidden="true"></i> 搜尋演唱會 / 新增行程
+                    </button>
+                </div>
+            </div>
+            <button class="gmail-btn" onclick="openGmail()">
+                <i class="ti ti-mail" style="font-size:14px" aria-hidden="true"></i> Gmail 同步
+            </button>
+            <div class="tabs-sm">
+                <button class="tab-sm on" id="tab-tl" onclick="switchPlannerTab('timeline')">時間軸</button>
+                <button class="tab-sm" id="tab-daily" onclick="switchPlannerTab('daily')">每日</button>
             </div>
         </div>
 
-        <button class="fab" onclick="window.open('https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit', '_blank')">
-            <i class="ti ti-plus"></i>
-        </button>
-    </div>
+        <!-- Status filter -->
+        <div class="status-bar">
+            <button class="status-chip on" id="chip-all" onclick="setFilter('all')" style="background:#7c3aed;border-color:#7c3aed">
+                <span class="dot" style="background:#fff"></span> 全部
+            </button>
+            <button class="status-chip" id="chip-upcoming" onclick="setFilter('upcoming')">
+                <span class="dot" style="background:#7c3aed"></span> 好期待
+            </button>
+            <button class="status-chip" id="chip-ongoing" onclick="setFilter('ongoing')">
+                <span class="dot" style="background:#0891b2"></span> 進行中
+            </button>
+            <button class="status-chip" id="chip-past" onclick="setFilter('past')">
+                <span class="dot" style="background:#888"></span> 已完結
+            </button>
+        </div>
 
-    <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbw5YreMxTtQyaTU6CFZhxIoi5dtknHZQhYL2Wuy023FA3vASFICJCx9u0ULiiVCG9o/exec";
+        <!-- Countdown -->
+        <div class="cd-card">
+            <div class="cd-artist" id="cd-artist" style="color:#7c3aed">BTS</div>
+            <div class="cd-name" id="cd-name">BTS Yet To Come — 橫濱</div>
+            <div class="cd-venue">
+                <i class="ti ti-map-pin" style="font-size:12px" aria-hidden="true"></i>
+                日産スタジアム, 橫濱 <span class="tz-pill">JST</span>
+            </div>
+            <div class="cd-nums">
+                <div class="cd-unit"><span class="cd-n" id="cd-d" style="color:#7c3aed">--</span><span class="cd-l">天</span></div>
+                <div class="cd-unit"><span class="cd-n" id="cd-h" style="color:#7c3aed">--</span><span class="cd-l">時</span></div>
+                <div class="cd-unit"><span class="cd-n" id="cd-m" style="color:#7c3aed">--</span><span class="cd-l">分</span></div>
+                <div class="cd-unit"><span class="cd-n" id="cd-s" style="color:#7c3aed">--</span><span class="cd-l">秒</span></div>
+            </div>
+        </div>
 
-        async function fetchConcerts() {
-            try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
-                renderList(data);
-            } catch (error) {
-                document.getElementById('list-container').innerHTML = '<div class="loading-state">載入失敗，請檢查網路或 API 權限</div>';
-                console.error("Fetch error:", error);
-            }
-        }
+        <!-- Hotel banner -->
+        <div class="hotel-banner">
+            <i class="ti ti-building" style="font-size:16px;color:#0891b2" aria-hidden="true"></i>
+            <div>
+                <div class="hotel-name">橫濱皇家公園飯店</div>
+                <div class="hotel-dates">📥 09/11 → 📤 09/15 · 含早餐, 4 晚</div>
+            </div>
+            <span class="gmail-tag">Gmail</span>
+            <button class="icon-btn" onclick="openHotelModal()"><i class="ti ti-edit" aria-label="編輯住宿"></i></button>
+        </div>
 
-        function renderList(items) {
-            const container = document.getElementById('list-container');
-            const totalDisplay = document.getElementById('total-count');
-            
-            // Sort by date descending
-            items.sort((a, b) => new Date(b.Date) - new Date(a.Date));
-            
-            totalDisplay.textContent = items.length + " 場";
-            container.innerHTML = "";
+        <!-- Planner scrollable content -->
+        <div class="planner-main">
 
-            items.forEach(item => {
-                const dateObj = new Date(item.Date);
-                const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-                
-                const card = `
-                    <div class="concert-card">
-                        <div class="date-box">
-                            <div class="month">${months[dateObj.getMonth()]}</div>
-                            <div class="day">${dateObj.getDate()}</div>
+            <!-- Timeline view -->
+            <div id="planner-timeline">
+                <div class="tl-row">
+                    <div class="tl-left"><div class="tl-date">09/11</div><div class="tl-time">08:00</div><div class="tl-tzl" style="color:#7c3aed">HKT</div></div>
+                    <div class="tl-axis"><div class="tl-dot" style="background:#0891b2"><i class="ti ti-plane" aria-hidden="true"></i></div><div class="tl-line"></div></div>
+                    <div class="tl-card">
+                        <div class="card-top">
+                            <span class="type-pill" style="color:#0891b2;background:#e0f2fe">✈️ 航班</span>
+                            <div style="margin-left:auto;display:flex;gap:3px">
+                                <button class="icon-btn" onclick="openEditItem(0)"><i class="ti ti-edit" aria-label="編輯"></i></button>
+                                <button class="icon-btn" style="color:#dc2626"><i class="ti ti-trash" aria-label="刪除"></i></button>
+                            </div>
                         </div>
-                        <div class="info">
-                            <div class="title">${item.Title}</div>
-                            <div class="venue">
-                                <i class="ti ti-map-pin"></i> ${item.Venue}
-                                ${item.Note ? `<span style="margin-left:8px; opacity:0.6">| ${item.Note}</span>` : ''}
+                        <div class="card-title">HKG → HND</div>
+                        <div class="card-detail">
+                            <span><i class="ti ti-luggage" style="font-size:11px" aria-hidden="true"></i> 報到 08:00</span>
+                            <span>CX 562</span>
+                            <span><i class="ti ti-clock" style="font-size:11px" aria-hidden="true"></i> 抵達 15:45 JST</span>
+                        </div>
+                        <div class="card-note">行李 25kg</div>
+                    </div>
+                </div>
+
+                <div class="tl-row">
+                    <div class="tl-left"><div class="tl-date">09/13</div><div class="tl-time">16:30</div><div class="tl-tzl" style="color:#7c3aed">JST</div></div>
+                    <div class="tl-axis"><div class="tl-dot" style="background:#7c3aed"><i class="ti ti-music" aria-hidden="true"></i></div><div class="tl-line"></div></div>
+                    <div class="tl-card">
+                        <div class="card-top">
+                            <span class="type-pill" style="color:#7c3aed;background:#ede9fe">🎤 演唱會</span>
+                            <div style="margin-left:auto;display:flex;gap:3px">
+                                <button class="icon-btn" onclick="openEditItem(1)"><i class="ti ti-edit" aria-label="編輯"></i></button>
+                                <button class="icon-btn" style="color:#dc2626"><i class="ti ti-trash" aria-label="刪除"></i></button>
+                            </div>
+                        </div>
+                        <div class="card-title">🎤 演唱會 Day 1</div>
+                        <div class="card-detail">
+                            <span><i class="ti ti-door-enter" style="font-size:11px" aria-hidden="true"></i> 入場 16:30</span>
+                            <span><i class="ti ti-player-play" style="font-size:11px" aria-hidden="true"></i> 開演 18:00</span>
+                            <span><i class="ti ti-player-stop" style="font-size:11px" aria-hidden="true"></i> 完結 21:00</span>
+                        </div>
+                        <div class="card-note">Block A, Row 5</div>
+                    </div>
+                </div>
+
+                <div class="tl-row">
+                    <div class="tl-left"><div class="tl-date">09/14</div><div class="tl-time">16:30</div><div class="tl-tzl" style="color:#7c3aed">JST</div></div>
+                    <div class="tl-axis"><div class="tl-dot" style="background:#7c3aed"><i class="ti ti-music" aria-hidden="true"></i></div><div class="tl-line"></div></div>
+                    <div class="tl-card">
+                        <div class="card-top">
+                            <span class="type-pill" style="color:#7c3aed;background:#ede9fe">🎤 演唱會</span>
+                            <div style="margin-left:auto;display:flex;gap:3px">
+                                <button class="icon-btn"><i class="ti ti-edit" aria-label="編輯"></i></button>
+                                <button class="icon-btn" style="color:#dc2626"><i class="ti ti-trash" aria-label="刪除"></i></button>
+                            </div>
+                        </div>
+                        <div class="card-title">🎤 演唱會 Day 2</div>
+                        <div class="card-detail">
+                            <span><i class="ti ti-door-enter" style="font-size:11px" aria-hidden="true"></i> 入場 16:30</span>
+                            <span><i class="ti ti-player-play" style="font-size:11px" aria-hidden="true"></i> 開演 18:00</span>
+                            <span><i class="ti ti-player-stop" style="font-size:11px" aria-hidden="true"></i> 完結 21:00</span>
+                        </div>
+                        <div class="card-note">Block A, Row 5</div>
+                    </div>
+                </div>
+
+                <div class="tl-row">
+                    <div class="tl-left"><div class="tl-date">09/15</div><div class="tl-time">06:30</div><div class="tl-tzl" style="color:#7c3aed">JST</div></div>
+                    <div class="tl-axis"><div class="tl-dot" style="background:#0891b2"><i class="ti ti-plane" aria-hidden="true"></i></div></div>
+                    <div class="tl-card">
+                        <div class="card-top">
+                            <span class="type-pill" style="color:#0891b2;background:#e0f2fe">✈️ 航班</span>
+                            <div style="margin-left:auto;display:flex;gap:3px">
+                                <button class="icon-btn"><i class="ti ti-edit" aria-label="編輯"></i></button>
+                                <button class="icon-btn" style="color:#dc2626"><i class="ti ti-trash" aria-label="刪除"></i></button>
+                            </div>
+                        </div>
+                        <div class="card-title">HND → HKG</div>
+                        <div class="card-detail">
+                            <span><i class="ti ti-luggage" style="font-size:11px" aria-hidden="true"></i> 報到 06:30</span>
+                            <span>CX 543</span>
+                            <span><i class="ti ti-clock" style="font-size:11px" aria-hidden="true"></i> 抵達 12:30 HKT</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daily view -->
+            <div id="planner-daily" style="display:none">
+                <div class="day-sel">
+                    <button class="day-tab on" onclick="switchDay(0)" id="dt0" style="border-color:#7c3aed;color:#7c3aed">
+                        <div style="font-size:10px;font-weight:700">09/11</div><div style="font-size:15px;margin-top:2px">✈️</div>
+                    </button>
+                    <button class="day-tab" onclick="switchDay(1)" id="dt1">
+                        <div style="font-size:10px;font-weight:700">09/12</div><div style="font-size:15px;margin-top:2px">📌</div>
+                    </button>
+                    <button class="day-tab" onclick="switchDay(2)" id="dt2">
+                        <div style="font-size:10px;font-weight:700">09/13</div><div style="font-size:15px;margin-top:2px">🎤</div>
+                    </button>
+                    <button class="day-tab" onclick="switchDay(3)" id="dt3">
+                        <div style="font-size:10px;font-weight:700">09/14</div><div style="font-size:15px;margin-top:2px">🎤</div>
+                    </button>
+                    <button class="day-tab" onclick="switchDay(4)" id="dt4">
+                        <div style="font-size:10px;font-weight:700">09/15</div><div style="font-size:15px;margin-top:2px">✈️</div>
+                    </button>
+                </div>
+
+                <div id="hl-cards">
+                    <!-- Day 0 -->
+                    <div id="hl0">
+                        <div class="hl-card">
+                            <div class="hl-title">✦ 今日 Highlight</div>
+                            <div class="hl-row"><i class="ti ti-building" style="font-size:14px;color:#0891b2" aria-hidden="true"></i><span>橫濱皇家公園飯店</span></div>
+                            <div class="hl-row"><i class="ti ti-plane" style="font-size:14px;color:#0891b2" aria-hidden="true"></i><span>HKG → HND</span><span style="font-size:11px;color:var(--color-text-tertiary);margin-left:4px">10:30 HKT</span></div>
+                        </div>
+                        <div class="ag-label">當日行程</div>
+                        <div class="ag-row">
+                            <div class="ag-time">08:00<br><span style="font-size:9px;color:#7c3aed">HKT</span></div>
+                            <div class="ag-bar" style="background:#0891b2"></div>
+                            <div class="ag-card">
+                                <div class="ag-row-inner"><i class="ti ti-plane" style="font-size:13px;color:#0891b2" aria-hidden="true"></i><span style="font-size:12px;font-weight:600;flex:1">HKG → HND</span><button class="icon-btn"><i class="ti ti-edit" aria-label="編輯"></i></button></div>
+                                <div class="ag-sub">報到時間 08:00 · CX 562 · 抵達 15:45 JST</div>
                             </div>
                         </div>
                     </div>
-                `;
-                container.insertAdjacentHTML('beforeend', card);
-            });
-        }
+                    <!-- Day 1 -->
+                    <div id="hl1" style="display:none">
+                        <div class="hl-card">
+                            <div class="hl-title">✦ 今日 Highlight</div>
+                            <div class="hl-row"><i class="ti ti-building" style="font-size:14px;color:#0891b2" aria-hidden="true"></i><span>橫濱皇家公園飯店</span></div>
+                            <div style="font-size:12px;color:var(--color-text-secondary);margin-top:6px">自由活動日 ✌️</div>
+                        </div>
+                        <div class="ag-label">當日行程</div>
+                        <div style="font-size:12px;color:var(--color-text-tertiary)">這天暫無已安排行程</div>
+                    </div>
+                    <!-- Day 2 -->
+                    <div id="hl2" style="display:none">
+                        <div class="hl-card">
+                            <div class="hl-title">✦ 今日 Highlight</div>
+                            <div class="hl-row"><i class="ti ti-building" style="font-size:14px;color:#0891b2" aria-hidden="true"></i><span>橫濱皇家公園飯店</span></div>
+                            <div class="hl-row"><i class="ti ti-music" style="font-size:14px;color:#7c3aed" aria-hidden="true"></i><span style="font-weight:600;color:var(--color-text-primary)">🎤 演唱會 Day 1</span><span style="font-size:11px;color:var(--color-text-tertiary);margin-left:4px">開演 18:00</span></div>
+                        </div>
+                        <div class="ag-label">當日行程</div>
+                        <div class="ag-row">
+                            <div class="ag-time">16:30<br><span style="font-size:9px;color:#7c3aed">JST</span></div>
+                            <div class="ag-bar" style="background:#7c3aed"></div>
+                            <div class="ag-card">
+                                <div class="ag-row-inner"><i class="ti ti-music" style="font-size:13px;color:#7c3aed" aria-hidden="true"></i><span style="font-size:12px;font-weight:600;flex:1">🎤 演唱會 Day 1</span><button class="icon-btn"><i class="ti ti-edit" aria-label="編輯"></i></button></div>
+                                <div class="ag-sub">入場 16:30 · 開演 18:00 · 預計完結 21:00 · Block A Row 5</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Day 3 -->
+                    <div id="hl3" style="display:none">
+                        <div class="hl-card">
+                            <div class="hl-title">✦ 今日 Highlight</div>
+                            <div class="hl-row"><i class="ti ti-building" style="font-size:14px;color:#0891b2" aria-hidden="true"></i><span>橫濱皇家公園飯店</span></div>
+                            <div class="hl-row"><i class="ti ti-music" style="font-size:14px;color:#7c3aed" aria-hidden="true"></i><span style="font-weight:600;color:var(--color-text-primary)">🎤 演唱會 Day 2</span><span style="font-size:11px;color:var(--color-text-tertiary);margin-left:4px">開演 18:00</span></div>
+                        </div>
+                        <div class="ag-label">當日行程</div>
+                        <div class="ag-row">
+                            <div class="ag-time">16:30<br><span style="font-size:9px;color:#7c3aed">JST</span></div>
+                            <div class="ag-bar" style="background:#7c3aed"></div>
+                            <div class="ag-card">
+                                <div class="ag-row-inner"><i class="ti ti-music" style="font-size:13px;color:#7c3aed" aria-hidden="true"></i><span style="font-size:12px;font-weight:600;flex:1">🎤 演唱會 Day 2</span><button class="icon-btn"><i class="ti ti-edit" aria-label="編輯"></i></button></div>
+                                <div class="ag-sub">入場 16:30 · 開演 18:00 · 預計完結 21:00 · Block A Row 5</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Day 4 -->
+                    <div id="hl4" style="display:none">
+                        <div class="hl-card">
+                            <div class="hl-title">✦ 今日 Highlight</div>
+                            <div class="hl-row"><i class="ti ti-plane" style="font-size:14px;color:#0891b2" aria-hidden="true"></i><span>HND → HKG</span><span style="font-size:11px;color:var(--color-text-tertiary);margin-left:4px">09:00 JST</span></div>
+                        </div>
+                        <div class="ag-label">當日行程</div>
+                        <div class="ag-row">
+                            <div class="ag-time">06:30<br><span style="font-size:9px;color:#7c3aed">JST</span></div>
+                            <div class="ag-bar" style="background:#0891b2"></div>
+                            <div class="ag-card">
+                                <div class="ag-row-inner"><i class="ti ti-plane" style="font-size:13px;color:#0891b2" aria-hidden="true"></i><span style="font-size:12px;font-weight:600;flex:1">HND → HKG</span><button class="icon-btn"><i class="ti ti-edit" aria-label="編輯"></i></button></div>
+                                <div class="ag-sub">報到時間 06:30 · CX 543 · 抵達 12:30 HKT</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        window.onload = fetchConcerts;
-    </script>
+        </div><!-- /planner-main -->
+    </div><!-- /view-plan -->
+
+    <!-- ════════════════════════════════════
+         JOURNAL VIEW
+    ════════════════════════════════════ -->
+    <div id="view-journal" class="content">
+        <div class="stats-card">
+            <h3>總參與場次</h3>
+            <div id="total-count" class="count">--</div>
+            <p style="font-size:12px;opacity:0.8">資料同步自 Google Sheets</p>
+        </div>
+        <div id="list-container">
+            <div class="loading-state">載入紀錄中...</div>
+        </div>
+    </div>
+
+    <!-- FAB (context-aware) -->
+    <button class="fab" id="main-fab" onclick="onFabClick()" aria-label="新增">
+        <i class="ti ti-plus" aria-hidden="true"></i>
+    </button>
+
+    <!-- ════ MODALS ════ -->
+
+    <!-- Add Item -->
+    <div class="overlay" id="modal-add" style="display:none">
+        <div class="modal">
+            <div class="modal-hdr">
+                <span class="modal-title">新增行程</span>
+                <button class="icon-btn" onclick="closeModal('modal-add')" style="font-size:18px"><i class="ti ti-x" aria-label="關閉"></i></button>
+            </div>
+            <div class="type-row">
+                <button class="type-btn" id="tb-flight" onclick="selType('flight')" style="border-color:#0891b2;background:#e0f2fe;color:#0891b2">✈️ 航班</button>
+                <button class="type-btn" id="tb-concert" onclick="selType('concert')">🎤 演唱會</button>
+                <button class="type-btn" id="tb-custom" onclick="selType('custom')">⭐ 自訂</button>
+            </div>
+            <label class="field-label">標題 *</label>
+            <input class="field-input" id="add-title" placeholder="e.g. HKG → HND / 演唱會 Day 1">
+            <div class="row2">
+                <div>
+                    <label class="field-label">開始時間</label>
+                    <input type="datetime-local" class="field-input" id="add-start">
+                </div>
+                <div>
+                    <label class="field-label">時區</label>
+                    <select class="field-input" id="add-tz">
+                        <option value="Asia/Tokyo">🇯🇵 東京 JST</option>
+                        <option value="Asia/Seoul">🇰🇷 首爾 KST</option>
+                        <option value="Asia/Hong_Kong">🇭🇰 香港 HKT</option>
+                        <option value="Asia/Singapore">🇸🇬 新加坡 SGT</option>
+                    </select>
+                </div>
+            </div>
+            <div id="flight-fields">
+                <div class="row2">
+                    <div><label class="field-label">航班號碼</label><input class="field-input" id="add-flightno" placeholder="CX 562"></div>
+                    <div><label class="field-label">預計抵達</label><input type="datetime-local" class="field-input" id="add-end"></div>
+                </div>
+                <label class="field-label">預計報到時間 (Check-in)</label>
+                <input type="datetime-local" class="field-input" id="add-checkin">
+            </div>
+            <div id="concert-fields" style="display:none">
+                <div class="row2">
+                    <div><label class="field-label">入場 (Doors Open)</label><input type="datetime-local" class="field-input" id="add-doors"></div>
+                    <div><label class="field-label">開演時間</label><input type="datetime-local" class="field-input" id="add-showstart"></div>
+                </div>
+                <label class="field-label">預計完結時間</label>
+                <input type="datetime-local" class="field-input" id="add-showend">
+            </div>
+            <label class="field-label">備註</label>
+            <input class="field-input" id="add-note" placeholder="座位、行李重量...">
+            <button class="save-btn" onclick="saveItem()"><i class="ti ti-check" aria-hidden="true"></i> 新增行程</button>
+        </div>
+    </div>
+
+    <!-- Hotel -->
+    <div class="overlay" id="modal-hotel" style="display:none">
+        <div class="modal">
+            <div class="modal-hdr">
+                <span class="modal-title">住宿資訊</span>
+                <button class="icon-btn" onclick="closeModal('modal-hotel')" style="font-size:18px"><i class="ti ti-x" aria-label="關閉"></i></button>
+            </div>
+            <label class="field-label">酒店名稱 *</label>
+            <input class="field-input" value="橫濱皇家公園飯店" placeholder="e.g. 橫濱皇家公園飯店">
+            <div class="row2">
+                <div><label class="field-label">入住日期</label><input type="datetime-local" class="field-input"></div>
+                <div><label class="field-label">退房日期</label><input type="datetime-local" class="field-input"></div>
+            </div>
+            <label class="field-label">地址</label>
+            <input class="field-input" placeholder="飯店地址">
+            <label class="field-label">備註</label>
+            <input class="field-input" placeholder="含早餐, 幾晚...">
+            <button class="save-btn" onclick="closeModal('modal-hotel')"><i class="ti ti-check" aria-hidden="true"></i> 儲存住宿</button>
+        </div>
+    </div>
+
+    <!-- Concert Search -->
+    <div class="overlay" id="modal-search" style="display:none">
+        <div class="modal">
+            <div class="modal-hdr">
+                <span class="modal-title">搜尋演唱會</span>
+                <button class="icon-btn" onclick="closeModal('modal-search')" style="font-size:18px"><i class="ti ti-x" aria-label="關閉"></i></button>
+            </div>
+            <div style="position:relative">
+                <i class="ti ti-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--color-text-tertiary);font-size:14px" aria-hidden="true"></i>
+                <input class="search-inp" placeholder="輸入藝人或演唱會名稱..." oninput="filterConcerts(this.value)" autofocus>
+            </div>
+            <div id="concert-results">
+                <button class="concert-result" onclick="selectConcert('bts')">
+                    <span style="font-size:22px">💜</span>
+                    <div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:#7c3aed">BTS Yet To Come — 橫濱</div><div style="font-size:11px;color:var(--color-text-secondary)">日産スタジアム · 2025-09-13</div></div>
+                    <i class="ti ti-chevron-right" style="color:var(--color-text-tertiary)" aria-hidden="true"></i>
+                </button>
+                <button class="concert-result" onclick="selectConcert('bp')">
+                    <span style="font-size:22px">🖤</span>
+                    <div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:#db2777">BLACKPINK BORN PINK — 首爾</div><div style="font-size:11px;color:var(--color-text-secondary)">高尺天空巨蛋 · 2025-11-22</div></div>
+                    <i class="ti ti-chevron-right" style="color:var(--color-text-tertiary)" aria-hidden="true"></i>
+                </button>
+                <button class="concert-result" onclick="selectConcert('txt')">
+                    <span style="font-size:22px">🌙</span>
+                    <div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:#0891b2">TXT WORLD TOUR — 新加坡</div><div style="font-size:11px;color:var(--color-text-secondary)">新加坡室內體育館 · 2025-10-05</div></div>
+                    <i class="ti ti-chevron-right" style="color:var(--color-text-tertiary)" aria-hidden="true"></i>
+                </button>
+                <button class="concert-result">
+                    <span style="font-size:22px">💎</span>
+                    <div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:#d97706">SEVENTEEN FOLLOW — 香港</div><div style="font-size:11px;color:var(--color-text-secondary)">啟德體育館 · 2026-02-14</div></div>
+                    <i class="ti ti-chevron-right" style="color:var(--color-text-tertiary)" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div style="border-top:0.5px solid var(--color-border-tertiary);margin-top:10px;padding-top:10px">
+                <button class="save-btn" style="background:var(--color-background-secondary);color:#7c3aed;border:1px solid #7c3aed40" onclick="closeModal('modal-search')">
+                    <i class="ti ti-plus" aria-hidden="true"></i> 手動建立自訂行程
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gmail Sync -->
+    <div class="overlay" id="modal-gmail" style="display:none">
+        <div class="modal">
+            <div class="modal-hdr">
+                <span class="modal-title">Gmail 同步</span>
+                <button class="icon-btn" onclick="closeModal('modal-gmail')" style="font-size:18px"><i class="ti ti-x" aria-label="關閉"></i></button>
+            </div>
+            <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:14px;line-height:1.7">
+                授權後，FTour 會自動掃描你的 Gmail，找出演唱會票務確認信、航班 E-ticket 和酒店訂房確認，並協助你快速匯入行程。
+            </p>
+            <button class="save-btn" style="background:#ea4335" onclick="fakeGmailSync()">
+                <i class="ti ti-mail" aria-hidden="true"></i> 連接 Google 帳號
+            </button>
+            <div id="gmail-results" style="display:none;margin-top:14px">
+                <div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:8px;letter-spacing:1px">✈️ 找到的航班確認信</div>
+                <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)">
+                    <div style="flex:1"><div style="font-size:12px;font-weight:600">Flight Confirmation - CX 562 HKG→HND</div><div style="font-size:11px;color:var(--color-text-tertiary)">noreply@cathaypacific.com</div></div>
+                    <button class="save-btn" style="width:auto;padding:5px 12px;font-size:11px;margin:0">匯入</button>
+                </div>
+                <div style="font-size:11px;color:var(--color-text-tertiary);margin:10px 0 8px;letter-spacing:1px">🏨 找到的酒店確認信</div>
+                <div style="display:flex;align-items:center;gap:8px;padding:8px 0">
+                    <div style="flex:1"><div style="font-size:12px;font-weight:600">Booking Confirmation - Royal Park Hotel</div><div style="font-size:11px;color:var(--color-text-tertiary)">confirm@royalparkhotels.com</div></div>
+                    <button class="save-btn" style="width:auto;padding:5px 12px;font-size:11px;margin:0">匯入</button>
+                </div>
+            </div>
+            <div style="margin-top:12px;padding:10px;background:var(--color-background-secondary);border-radius:8px;font-size:11px;color:var(--color-text-tertiary);line-height:1.6">
+                ⚠️ 需在 <code style="color:#7c3aed">.env</code> 設定 <code style="color:#7c3aed">VITE_GOOGLE_CLIENT_ID</code>，並在 Google Cloud Console 啟用 Gmail API。
+            </div>
+        </div>
+    </div>
+
+</div><!-- /phone-container -->
+
+<script>
+    // ── Config ──
+    const API_URL = "https://script.google.com/macros/s/AKfycbw5YreMxTtQyaTU6CFZhxIoi5dtknHZQhYL2Wuy023FA3vASFICJCx9u0ULiiVCG9o/exec";
+
+    const CONCERTS = [
+        { label: '💜 BTS — 橫濱',    color: '#7c3aed', target: new Date('2025-09-13T18:00:00+09:00') },
+        { label: '🖤 BLACKPINK — 首爾', color: '#db2777', target: new Date('2025-11-22T19:00:00+09:00') },
+        { label: '🌙 TXT — 新加坡',   color: '#0891b2', target: new Date('2025-10-05T19:00:00+08:00') },
+    ];
+
+    // ── State ──
+    let activeC = 0, curPlannerView = 'timeline', curDay = 0, curType = 'flight', curFilter = 'all';
+    let currentMainTab = 'journal';
+
+    // ── Main Tab Switch ──
+    function switchMainTab(tab) {
+        currentMainTab = tab;
+        document.getElementById('view-plan').style.display    = tab === 'plan'    ? 'flex'  : 'none';
+        document.getElementById('view-journal').style.display = tab === 'journal' ? 'block' : 'none';
+        document.getElementById('main-tab-plan').className    = 'main-tab' + (tab === 'plan'    ? ' active' : '');
+        document.getElementById('main-tab-journal').className = 'main-tab' + (tab === 'journal' ? ' active' : '');
+    }
+
+    function onFabClick() {
+        if (currentMainTab === 'plan') openAddItem();
+        else window.open('https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit', '_blank');
+    }
+
+    // ── Journal: Load from Google Sheets ──
+    async function fetchConcerts() {
+        try {
+            const res = await fetch(API_URL);
+            renderList(await res.json());
+        } catch (err) {
+            document.getElementById('list-container').innerHTML =
+                '<div class="loading-state">載入失敗，請檢查網路或 API 權限</div>';
+            console.error('Fetch error:', err);
+        }
+    }
+
+    function renderList(items) {
+        const container = document.getElementById('list-container');
+        items.sort((a, b) => new Date(b.Date) - new Date(a.Date));
+        document.getElementById('total-count').textContent = items.length + ' 場';
+        container.innerHTML = '';
+        const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+        items.forEach(item => {
+            const d = new Date(item.Date);
+            container.insertAdjacentHTML('beforeend', `
+                <div class="journal-card">
+                    <div class="date-box">
+                        <div class="month">${months[d.getMonth()]}</div>
+                        <div class="day">${d.getDate()}</div>
+                    </div>
+                    <div class="info">
+                        <div class="title">${item.Title}</div>
+                        <div class="venue">
+                            <i class="ti ti-map-pin"></i> ${item.Venue}
+                            ${item.Note ? `<span style="margin-left:8px;opacity:0.6">| ${item.Note}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `);
+        });
+    }
+
+    // ── Planner: Countdown ──
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function updateCD() {
+        const diff = CONCERTS[activeC].target - new Date();
+        const el = id => document.getElementById(id);
+        if (diff <= 0) {
+            ['cd-d','cd-h','cd-m','cd-s'].forEach(id => el(id).textContent = '00');
+            return;
+        }
+        el('cd-d').textContent = pad(Math.floor(diff / 86400000));
+        el('cd-h').textContent = pad(Math.floor((diff % 86400000) / 3600000));
+        el('cd-m').textContent = pad(Math.floor((diff % 3600000) / 60000));
+        el('cd-s').textContent = pad(Math.floor((diff % 60000) / 1000));
+    }
+    setInterval(updateCD, 1000);
+    updateCD();
+
+    // ── Planner: Project Dropdown ──
+    function toggleDD() {
+        const dd = document.getElementById('dd');
+        dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+    }
+
+    document.addEventListener('click', e => {
+        const w = document.getElementById('proj-wrap');
+        if (w && !w.contains(e.target)) document.getElementById('dd').style.display = 'none';
+    });
+
+    function switchConcert(i) {
+        activeC = i;
+        const c = CONCERTS[i];
+        document.getElementById('proj-label').textContent = c.label;
+        document.getElementById('dd').style.display = 'none';
+        document.querySelectorAll('.cd-n').forEach(el => el.style.color = c.color);
+        updateCD();
+    }
+
+    // ── Planner: Timeline / Daily toggle ──
+    function switchPlannerTab(t) {
+        curPlannerView = t;
+        document.getElementById('planner-timeline').style.display = t === 'timeline' ? 'block' : 'none';
+        document.getElementById('planner-daily').style.display    = t === 'daily'    ? 'block' : 'none';
+        document.getElementById('tab-tl').className    = 'tab-sm' + (t === 'timeline' ? ' on' : '');
+        document.getElementById('tab-daily').className = 'tab-sm' + (t === 'daily'    ? ' on' : '');
+    }
+
+    // ── Planner: Day Selector ──
+    function switchDay(i) {
+        document.getElementById('hl' + curDay).style.display = 'none';
+        const prevTab = document.getElementById('dt' + curDay);
+        prevTab.className = 'day-tab';
+        prevTab.style.borderColor = '';
+        prevTab.style.color = '';
+        curDay = i;
+        document.getElementById('hl' + i).style.display = 'block';
+        const curTab = document.getElementById('dt' + i);
+        curTab.className = 'day-tab on';
+        curTab.style.borderColor = CONCERTS[activeC].color;
+        curTab.style.color = CONCERTS[activeC].color;
+    }
+
+    // ── Planner: Status Filter ──
+    const statusCfg = {
+        upcoming: { bg: '#7c3aed' },
+        ongoing:  { bg: '#0891b2' },
+        past:     { bg: '#6b7280' },
+    };
+
+    function setFilter(f) {
+        curFilter = f;
+        ['all','upcoming','ongoing','past'].forEach(k => {
+            const el = document.getElementById('chip-' + k);
+            if (!el) return;
+            if (k === f) {
+                el.style.background  = k === 'all' ? '#7c3aed' : statusCfg[k].bg;
+                el.style.borderColor = k === 'all' ? '#7c3aed' : statusCfg[k].bg;
+                el.style.color = '#fff';
+                el.className = 'status-chip on';
+            } else {
+                el.style.background = el.style.borderColor = el.style.color = '';
+                el.className = 'status-chip';
+            }
+        });
+    }
+
+    // ── Modals ──
+    function openModal(id)  { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function openAddItem()       { openModal('modal-add'); }
+    function openHotelModal()    { openModal('modal-hotel'); }
+    function openConcertSearch() { openModal('modal-search'); }
+    function openGmail()         { openModal('modal-gmail'); }
+    function openEditItem()      { openModal('modal-add'); }
+
+    document.querySelectorAll('.overlay').forEach(el => {
+        el.addEventListener('click', function(e) { if (e.target === this) this.style.display = 'none'; });
+    });
+
+    // ── Planner: Add Item Type Selector ──
+    function selType(t) {
+        curType = t;
+        const cfgs = {
+            flight:  { color: '#0891b2', bg: '#e0f2fe' },
+            concert: { color: '#7c3aed', bg: '#ede9fe' },
+            custom:  { color: '#d97706', bg: '#fef3c7' },
+        };
+        ['flight','concert','custom'].forEach(k => {
+            const btn = document.getElementById('tb-' + k);
+            if (k === t) { btn.style.borderColor = cfgs[k].color; btn.style.background = cfgs[k].bg; btn.style.color = cfgs[k].color; }
+            else { btn.style.borderColor = 'transparent'; btn.style.background = 'var(--color-background-secondary)'; btn.style.color = 'var(--color-text-secondary)'; }
+        });
+        document.getElementById('flight-fields').style.display  = t === 'flight'  ? 'block' : 'none';
+        document.getElementById('concert-fields').style.display = t === 'concert' ? 'block' : 'none';
+    }
+
+    function saveItem() {
+        const title = document.getElementById('add-title').value.trim();
+        if (!title) { document.getElementById('add-title').style.borderColor = '#dc2626'; return; }
+        closeModal('modal-add');
+    }
+
+    // ── Concert Search Filter ──
+    function filterConcerts(q) {
+        document.querySelectorAll('.concert-result').forEach(r => {
+            const name = r.querySelector('div > div')?.textContent || '';
+            r.style.display = name.toLowerCase().includes(q.toLowerCase()) || q === '' ? 'flex' : 'none';
+        });
+    }
+
+    function selectConcert(id) {
+        closeModal('modal-search');
+        const map = { bts: 0, bp: 1, txt: 2 };
+        if (map[id] !== undefined) switchConcert(map[id]);
+    }
+
+    // ── Gmail Demo ──
+    function fakeGmailSync() {
+        const btn = event.target.closest('button');
+        btn.textContent = '掃描中...';
+        btn.disabled = true;
+        setTimeout(() => {
+            btn.innerHTML = '<i class="ti ti-check"></i> 同步完成';
+            btn.style.background = '#059669';
+            document.getElementById('gmail-results').style.display = 'block';
+        }, 1500);
+    }
+
+    // ── Init ──
+    window.onload = fetchConcerts;
+</script>
 </body>
 </html>
