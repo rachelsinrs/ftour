@@ -1,236 +1,1382 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FTour v4 - My Concert Journal</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&family=Noto+Sans+TC:wght@400;500;700&display=swap');
-        
-        :root {
-            --primary: #6366f1;
-            --bg-page: #f8fafc;
-            --bg-card: #ffffff;
-            --text-main: #1e293b;
-            --text-sub: #64748b;
-            --border: #e2e8f0;
-            --radius: 20px;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>FTour — 追星行程規劃</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            background-color: var(--bg-page); 
-            font-family: 'Noto Sans TC', sans-serif; 
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+<style>
+/* ── TOKENS ────────────────────────────────── */
+:root {
+  --primary: #6366f1;
+  --primary-light: #eef2ff;
+  --primary-dark: #4338ca;
+  --pink: #ec4899;
+  --teal: #0891b2;
+  --green: #059669;
+  --amber: #d97706;
+  --red: #dc2626;
+  --gray: #6b7280;
 
-        .phone-container {
-            width: 100%;
-            max-width: 390px;
-            height: 844px;
-            background: var(--bg-page);
-            border: 8px solid #1e293b;
-            border-radius: 48px;
-            overflow: hidden;
-            position: relative;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-            display: flex;
-            flex-direction: column;
-        }
+  --bg-page: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-sheet: #f8fafc;
+  --text-1: #0f172a;
+  --text-2: #475569;
+  --text-3: #94a3b8;
+  --border: #e2e8f0;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.04);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,.12);
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 22px;
+}
 
-        header {
-            padding: 40px 24px 16px;
-            background: white;
-            border-bottom: 1px solid var(--border);
-        }
+/* ── RESET ─────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: var(--bg-page);
+  display: flex; justify-content: center; align-items: center;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+button { cursor: pointer; font-family: inherit; }
+input, select, textarea { font-family: inherit; }
 
-        .logo {
-            font-family: 'Nunito', sans-serif;
-            font-size: 32px;
-            font-weight: 800;
-            color: var(--primary);
-            letter-spacing: -1px;
-        }
+/* ── PHONE SHELL ───────────────────────────── */
+.shell {
+  width: 100%; max-width: 390px;
+  height: 100svh; max-height: 844px;
+  background: var(--bg-sheet);
+  border-radius: 48px;
+  border: 8px solid #0f172a;
+  box-shadow: 0 30px 60px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.08);
+  display: flex; flex-direction: column;
+  overflow: hidden; position: relative;
+}
+@media (max-width: 420px) {
+  .shell { border-radius: 0; border: none; max-height: 100svh; }
+}
 
-        .tabs {
-            display: flex;
-            gap: 24px;
-            margin-top: 20px;
-        }
+/* ── HEADER ────────────────────────────────── */
+.hdr {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  padding: 36px 20px 0;
+  flex-shrink: 0;
+}
+.hdr-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.logo {
+  font-family: 'Nunito', sans-serif;
+  font-size: 30px; font-weight: 900;
+  color: var(--primary);
+  letter-spacing: -1.5px;
+  line-height: 1;
+}
+.logo span { color: var(--pink); }
+.hdr-actions { display: flex; gap: 8px; }
+.icon-action {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-sheet);
+  color: var(--text-2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; transition: all .15s;
+}
+.icon-action:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
+.icon-action.gmail-connected { background: #fef2f2; color: var(--red); border-color: #fecaca; }
 
-        .tab {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--text-sub);
-            padding-bottom: 8px;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-        }
+/* Nav tabs */
+.nav-tabs { display: flex; gap: 0; }
+.nav-tab {
+  flex: 1; padding: 10px 0; text-align: center;
+  font-size: 14px; font-weight: 700; color: var(--text-3);
+  border: none; background: none;
+  border-bottom: 3px solid transparent;
+  transition: all .2s;
+}
+.nav-tab.on { color: var(--primary); border-bottom-color: var(--primary); }
 
-        .tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-        }
+/* ── SCROLLABLE BODY ───────────────────────── */
+.body { flex: 1; overflow-y: auto; overscroll-behavior: contain; }
+.body::-webkit-scrollbar { width: 0; }
 
-        .content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 24px;
-            padding-bottom: 100px;
-            scroll-behavior: smooth;
-        }
+/* ── SECTION VIEWS ─────────────────────────── */
+.view { display: none; padding: 16px; padding-bottom: 88px; }
+.view.on { display: block; }
 
-        .stats-card {
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            padding: 24px;
-            border-radius: var(--radius);
-            color: white;
-            margin-bottom: 24px;
-            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
-        }
+/* ── STATUS FILTER BAR ─────────────────────── */
+.filter-bar {
+  display: flex; gap: 6px; padding: 12px 16px 0;
+  overflow-x: auto; flex-shrink: 0;
+}
+.filter-bar::-webkit-scrollbar { display: none; }
+.chip {
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card); color: var(--text-2);
+  font-size: 12px; font-weight: 700; white-space: nowrap;
+  transition: all .15s; flex-shrink: 0;
+}
+.chip .dot { width: 6px; height: 6px; border-radius: 50%; }
+.chip.on { color: #fff; border-color: transparent; }
+.chip.on[data-filter="all"] { background: var(--primary); }
+.chip.on[data-filter="upcoming"] { background: var(--primary); }
+.chip.on[data-filter="ongoing"] { background: var(--teal); }
+.chip.on[data-filter="past"] { background: var(--gray); }
 
-        .stats-card h3 { font-size: 14px; opacity: 0.9; font-weight: 500; }
-        .stats-card .count { font-size: 40px; font-weight: 800; margin: 4px 0; }
+/* ── COUNTDOWN CARD ────────────────────────── */
+.cd-card {
+  margin: 12px 16px 0;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+.cd-artist { font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2px; }
+.cd-name { font-size: 15px; font-weight: 700; margin-bottom: 2px; color: var(--text-1); }
+.cd-venue { font-size: 11px; color: var(--text-3); margin-bottom: 10px; display: flex; align-items: center; gap: 4px; }
+.tz-pill { font-size: 9px; padding: 1px 5px; border-radius: 4px; background: var(--bg-sheet); border: 1px solid var(--border); color: var(--text-3); }
+.cd-nums { display: flex; gap: 10px; }
+.cd-unit { display: flex; flex-direction: column; align-items: center; }
+.cd-n { font-size: 28px; font-weight: 900; font-family: 'Nunito', sans-serif; line-height: 1; font-variant-numeric: tabular-nums; }
+.cd-l { font-size: 9px; color: var(--text-3); margin-top: 1px; }
+.past-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 20px;
+  background: #f1f5f9; color: var(--text-2);
+  font-size: 13px; font-weight: 700;
+}
 
-        .loading-state {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-sub);
-        }
+/* ── HOTEL BANNER ──────────────────────────── */
+.hotel-banner {
+  display: flex; align-items: center; gap: 10px;
+  margin: 8px 16px 0;
+  padding: 9px 13px;
+  background: #f0fdfa; border: 1px solid #a7f3d0;
+  border-radius: var(--r-sm);
+  font-size: 12px; flex-shrink: 0;
+}
+.hotel-banner .name { font-weight: 700; color: #065f46; }
+.hotel-banner .dates { font-size: 11px; color: #059669; }
+.gmail-tag { font-size: 9px; padding: 2px 5px; border-radius: 3px; background: #fff7ed; color: #9a3412; font-weight: 700; border: 1px solid #fed7aa; flex-shrink: 0; }
 
-        .concert-card {
-            background: white;
-            padding: 16px;
-            border-radius: var(--radius);
-            margin-bottom: 16px;
-            border: 1px solid var(--border);
-            display: flex;
-            gap: 16px;
-            transition: transform 0.2s;
-            box-shadow: var(--shadow);
-        }
+/* ── TIMELINE ──────────────────────────────── */
+.tl-row { display: flex; gap: 0; margin-bottom: 4px; }
+.tl-left { width: 56px; min-width: 56px; padding-right: 10px; padding-top: 7px; text-align: right; }
+.tl-date { font-size: 10px; color: var(--text-3); line-height: 1.3; }
+.tl-time { font-size: 12px; font-weight: 700; color: var(--text-2); line-height: 1.3; }
+.tl-tz { font-size: 9px; font-weight: 700; }
+.tl-axis { display: flex; flex-direction: column; align-items: center; width: 22px; min-width: 22px; }
+.tl-dot {
+  width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 9px; flex-shrink: 0; margin-top: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+.tl-line { flex: 1; width: 0; min-height: 12px; border-left: 2px dashed var(--border); margin-top: 3px; }
+.tl-card {
+  flex: 1; margin-left: 10px; margin-bottom: 10px;
+  padding: 10px 13px; border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-sm);
+}
+.card-top { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+.type-pill { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px; }
+.card-title { font-size: 13px; font-weight: 700; color: var(--text-1); margin-bottom: 2px; }
+.card-detail { display: flex; flex-wrap: wrap; gap: 3px 10px; font-size: 11px; color: var(--text-2); align-items: center; margin-top: 3px; }
+.card-note { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+.card-actions { margin-left: auto; display: flex; gap: 2px; }
+.icon-btn { background: none; border: none; color: var(--text-3); padding: 3px; border-radius: 5px; font-size: 14px; display: flex; align-items: center; transition: color .15s; }
+.icon-btn:hover { color: var(--text-1); }
+.icon-btn.del:hover { color: var(--red); }
 
-        .concert-card:active { transform: scale(0.98); }
+/* ── DAY VIEW ──────────────────────────────── */
+.day-sel { display: flex; gap: 5px; overflow-x: auto; padding: 12px 16px 0; flex-shrink: 0; }
+.day-sel::-webkit-scrollbar { display: none; }
+.day-tab {
+  min-width: 50px; padding: 6px 8px; border-radius: var(--r-sm);
+  border: 1.5px solid var(--border); background: var(--bg-card);
+  cursor: pointer; text-align: center; flex-shrink: 0;
+  color: var(--text-3); transition: all .15s;
+}
+.day-tab.on { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+.day-tab .dt { font-size: 10px; font-weight: 800; }
+.day-tab .di { font-size: 16px; margin-top: 2px; }
+.hl-card {
+  background: var(--bg-card); border: 1.5px solid var(--border);
+  border-radius: var(--r-md); padding: 13px 15px;
+  margin-bottom: 12px; box-shadow: var(--shadow-sm);
+}
+.hl-title { font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; }
+.hl-row { display: flex; align-items: center; gap: 7px; margin-top: 5px; font-size: 12px; color: var(--text-1); }
+.hl-row .sub { font-size: 11px; color: var(--text-3); margin-left: 2px; }
+.ag-label { font-size: 10px; color: var(--text-3); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; font-weight: 700; }
+.ag-row { display: flex; gap: 0; margin-bottom: 8px; }
+.ag-time { width: 44px; min-width: 44px; text-align: right; padding-right: 8px; padding-top: 8px; font-size: 11px; font-weight: 700; color: var(--text-2); }
+.ag-bar { width: 3px; min-width: 3px; border-radius: 3px; margin: 6px 8px 0; }
+.ag-card { flex: 1; padding: 9px 12px; border-radius: var(--r-sm); border: 1px solid var(--border); background: var(--bg-card); }
+.ag-inner { display: flex; align-items: center; gap: 7px; }
+.ag-sub { font-size: 11px; color: var(--text-3); margin-top: 3px; padding-left: 20px; }
 
-        .date-box {
-            min-width: 56px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: #f1f5f9;
-            border-radius: 12px;
-            height: 56px;
-        }
+/* ── JOURNAL (past concerts) ───────────────── */
+.stats-banner {
+  background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%);
+  border-radius: var(--r-lg); padding: 20px;
+  color: #fff; margin-bottom: 16px;
+  box-shadow: 0 8px 20px rgba(99,102,241,.3);
+}
+.stats-banner h3 { font-size: 12px; opacity: .85; font-weight: 600; }
+.stats-banner .big { font-size: 38px; font-family: 'Nunito', sans-serif; font-weight: 900; margin: 2px 0; }
+.stats-banner p { font-size: 11px; opacity: .7; }
+.jcard {
+  display: flex; gap: 12px; background: var(--bg-card);
+  border: 1px solid var(--border); border-radius: var(--r-md);
+  padding: 13px; margin-bottom: 10px; box-shadow: var(--shadow-sm);
+  align-items: center;
+}
+.jcard .date-box {
+  min-width: 50px; height: 50px;
+  background: var(--primary-light); border-radius: var(--r-sm);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.jcard .date-box .mon { font-size: 9px; font-weight: 800; color: var(--primary); }
+.jcard .date-box .dy { font-size: 20px; font-weight: 900; font-family: 'Nunito', sans-serif; color: var(--primary-dark); }
+.jcard .info .title { font-size: 14px; font-weight: 700; color: var(--text-1); }
+.jcard .info .venue { font-size: 12px; color: var(--text-3); display: flex; align-items: center; gap: 4px; margin-top: 2px; }
+.loading { text-align: center; padding: 32px; color: var(--text-3); font-size: 13px; }
 
-        .date-box .month { font-size: 11px; font-weight: 800; color: var(--primary); }
-        .date-box .day { font-size: 20px; font-weight: 800; }
+/* ── MODALS ────────────────────────────────── */
+.overlay {
+  position: absolute; inset: 0; z-index: 200;
+  background: rgba(15,23,42,.55);
+  backdrop-filter: blur(3px);
+  display: none; align-items: flex-end; justify-content: center;
+}
+.overlay.on { display: flex; }
+.sheet {
+  background: var(--bg-card);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  padding: 20px 20px 32px;
+  width: 100%; max-height: 88%;
+  overflow-y: auto;
+}
+.sheet::-webkit-scrollbar { width: 0; }
+.sheet-handle { width: 36px; height: 4px; border-radius: 2px; background: var(--border); margin: 0 auto 16px; }
+.sheet-title { font-size: 18px; font-weight: 800; font-family: 'Nunito', sans-serif; color: var(--primary); margin-bottom: 16px; }
+.fl { display: flex; gap: 8px; }
+.fl > * { flex: 1; }
+.field-label { display: block; font-size: 10px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 5px; }
+.field-input {
+  display: block; width: 100%;
+  padding: 9px 11px; border-radius: var(--r-sm);
+  border: 1.5px solid var(--border);
+  background: var(--bg-sheet); color: var(--text-1);
+  font-size: 13px; outline: none; margin-bottom: 11px;
+  transition: border-color .15s;
+  -webkit-appearance: none;
+  color-scheme: light;
+}
+.field-input:focus { border-color: var(--primary); }
+.type-row { display: flex; gap: 5px; margin-bottom: 12px; }
+.type-btn {
+  flex: 1; padding: 7px 4px; border-radius: var(--r-sm);
+  border: 1.5px solid var(--border);
+  background: var(--bg-sheet); color: var(--text-3);
+  font-size: 11px; font-weight: 700; transition: all .15s;
+}
+.type-btn.on { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+.extra-fields { display: none; }
+.extra-fields.on { display: block; }
+.save-btn {
+  width: 100%; padding: 12px;
+  border-radius: var(--r-sm); border: none;
+  background: var(--primary); color: #fff;
+  font-size: 14px; font-weight: 800; margin-top: 4px;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  transition: opacity .15s;
+}
+.save-btn:disabled { opacity: .4; }
+.save-btn.ghost { background: var(--primary-light); color: var(--primary); }
+.save-btn.danger { background: #fef2f2; color: var(--red); }
+.concert-result {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--r-sm);
+  border: 1px solid var(--border); background: var(--bg-sheet);
+  cursor: pointer; width: 100%; text-align: left;
+  margin-bottom: 7px; transition: all .15s;
+}
+.concert-result:hover { border-color: var(--primary); background: var(--primary-light); }
+.search-wrap { position: relative; margin-bottom: 12px; }
+.search-wrap i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-3); font-size: 15px; }
+.search-inp {
+  width: 100%; padding: 9px 11px 9px 32px;
+  border-radius: var(--r-sm); border: 1.5px solid var(--border);
+  background: var(--bg-sheet); color: var(--text-1);
+  font-size: 13px; outline: none;
+}
+.search-inp:focus { border-color: var(--primary); }
+.gmail-result-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 0; border-bottom: 1px solid var(--border);
+}
+.gmail-result-row .import-btn {
+  padding: 5px 12px; border-radius: var(--r-sm);
+  background: var(--primary); color: #fff;
+  border: none; font-size: 11px; font-weight: 700; flex-shrink: 0;
+}
+.info-box {
+  padding: 10px 12px; border-radius: var(--r-sm);
+  background: var(--bg-sheet); border: 1px solid var(--border);
+  font-size: 11px; color: var(--text-3); line-height: 1.6; margin-top: 12px;
+}
+code { color: var(--primary); font-size: 11px; }
 
-        .info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-        .info .title { font-size: 15px; font-weight: 700; margin-bottom: 4px; line-height: 1.2; }
-        .info .venue { font-size: 13px; color: var(--text-sub); display: flex; align-items: center; gap: 4px; }
+/* ── FAB ────────────────────────────────────── */
+.fab {
+  position: absolute; bottom: 24px; right: 20px;
+  width: 54px; height: 54px; border-radius: 27px;
+  background: var(--primary); color: #fff; border: none;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; box-shadow: 0 6px 20px rgba(99,102,241,.45);
+  transition: transform .15s, box-shadow .15s; z-index: 10;
+}
+.fab:hover { transform: scale(1.06); box-shadow: 0 8px 24px rgba(99,102,241,.5); }
 
-        .fab {
-            position: absolute;
-            bottom: 40px;
-            right: 24px;
-            width: 60px;
-            height: 60px;
-            background: var(--primary);
-            border-radius: 30px;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.4);
-            font-size: 28px;
-            border: none;
-            cursor: pointer;
-        }
-    </style>
+/* project switcher in header */
+.proj-wrap { position: relative; }
+.proj-btn {
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 11px; border-radius: 20px;
+  border: 1.5px solid var(--border); background: var(--bg-sheet);
+  color: var(--text-1); font-size: 12px; font-weight: 700;
+  max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.dropdown {
+  position: absolute; top: calc(100% + 6px); left: 0;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--r-md); min-width: 210px; z-index: 300;
+  box-shadow: var(--shadow-lg); overflow: hidden; display: none;
+}
+.dropdown.on { display: block; }
+.dd-lbl { padding: 9px 13px 4px; font-size: 10px; font-weight: 800; color: var(--text-3); letter-spacing: 1.5px; text-transform: uppercase; }
+.dd-row { display: flex; align-items: center; padding: 1px 6px; }
+.dd-item { flex: 1; background: none; border: none; padding: 7px 8px; cursor: pointer; text-align: left; font-size: 12px; font-weight: 700; border-radius: 6px; color: var(--text-1); }
+.dd-item:hover { background: var(--bg-sheet); }
+.dd-add { width: 100%; display: flex; align-items: center; gap: 7px; padding: 10px 13px; background: var(--primary-light); border: none; border-top: 1px solid var(--border); color: var(--primary); font-size: 12px; font-weight: 800; }
+
+/* Status badge */
+.sbadge { font-size: 9px; padding: 2px 7px; border-radius: 20px; font-weight: 800; flex-shrink: 0; }
+.sbadge.upcoming { background: #ede9fe; color: #5b21b6; }
+.sbadge.ongoing { background: #e0f2fe; color: #155e75; }
+.sbadge.past { background: #f1f5f9; color: #475569; }
+
+/* Emoji color picker */
+.emoji-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+.emoji-btn { width: 30px; height: 30px; font-size: 16px; border-radius: 7px; border: 1.5px solid transparent; background: var(--bg-sheet); cursor: pointer; }
+.emoji-btn.on { border-color: var(--primary); background: var(--primary-light); }
+.color-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+.color-dot { width: 22px; height: 22px; border-radius: 50%; border: none; cursor: pointer; transition: outline .1s; }
+.color-dot.on { outline: 3px solid #0f172a; outline-offset: 2px; }
+
+/* empty state */
+.empty { text-align: center; padding: 40px 20px; color: var(--text-3); }
+.empty .big-icon { font-size: 44px; opacity: .25; margin-bottom: 10px; }
+</style>
 </head>
 <body>
-    <div class="phone-container">
-        <header>
-            <div class="logo">FTour</div>
-            <div class="tabs">
-                <div class="tab">未來行程</div>
-                <div class="tab active">紀錄</div>
-            </div>
-        </header>
+<div class="shell">
 
-        <div id="app-content" class="content">
-            <div class="stats-card">
-                <h3>總參與場次</h3>
-                <div id="total-count" class="count">--</div>
-                <p style="font-size: 12px; opacity: 0.8;">資料同步自 Google Sheets</p>
-            </div>
-
-            <div id="list-container">
-                <div class="loading-state">載入紀錄中...</div>
-            </div>
+  <!-- ── HEADER ── -->
+  <header class="hdr">
+    <div class="hdr-top">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="logo">FTour<span>♪</span></div>
+        <div class="proj-wrap" id="projWrap">
+          <button class="proj-btn" id="projBtn" onclick="toggleDD()">
+            <span id="projLabel">💜 BTS — 橫濱</span>
+            <i class="ti ti-chevron-down" style="font-size:11px"></i>
+          </button>
+          <div class="dropdown" id="projDD">
+            <div class="dd-lbl">我的行程</div>
+            <div id="ddList"></div>
+            <button class="dd-add" onclick="openSheet('sheetSearch')">
+              <i class="ti ti-search"></i> 搜尋 / 新增演唱會
+            </button>
+          </div>
         </div>
-
-        <button class="fab" onclick="window.open('https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit', '_blank')">
-            <i class="ti ti-plus"></i>
+      </div>
+      <div class="hdr-actions">
+        <button class="icon-action" id="gmailBtn" onclick="openSheet('sheetGmail')" title="Gmail 同步">
+          <i class="ti ti-mail"></i>
         </button>
+      </div>
     </div>
+    <nav class="nav-tabs">
+      <button class="nav-tab on" data-view="planner" onclick="switchView('planner')">行程規劃</button>
+      <button class="nav-tab" data-view="daily" onclick="switchView('daily')">每日</button>
+      <button class="nav-tab" data-view="journal" onclick="switchView('journal')">演唱會紀錄</button>
+    </nav>
+  </header>
 
-    <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbw5YreMxTtQyaTU6CFZhxIoi5dtknHZQhYL2Wuy023FA3vASFICJCx9u0ULiiVCG9o/exec";
+  <!-- ── STATUS FILTER (planner + daily only) ── -->
+  <div class="filter-bar" id="filterBar">
+    <button class="chip on" data-filter="all" onclick="setFilter('all')">
+      <span class="dot" style="background:#fff"></span> 全部
+    </button>
+    <button class="chip" data-filter="upcoming" onclick="setFilter('upcoming')">
+      <span class="dot" style="background:#6366f1"></span> 好期待
+    </button>
+    <button class="chip" data-filter="ongoing" onclick="setFilter('ongoing')">
+      <span class="dot" style="background:#0891b2"></span> 進行中
+    </button>
+    <button class="chip" data-filter="past" onclick="setFilter('past')">
+      <span class="dot" style="background:#6b7280"></span> 已完結
+    </button>
+  </div>
 
-        async function fetchConcerts() {
-            try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
-                renderList(data);
-            } catch (error) {
-                document.getElementById('list-container').innerHTML = '<div class="loading-state">載入失敗，請檢查網路或 API 權限</div>';
-                console.error("Fetch error:", error);
-            }
+  <!-- ── COUNTDOWN ── -->
+  <div class="cd-card" id="cdCard">
+    <div class="cd-artist" id="cdArtist"></div>
+    <div class="cd-name" id="cdName"></div>
+    <div class="cd-venue" id="cdVenue"></div>
+    <div class="cd-nums" id="cdNums"></div>
+  </div>
+
+  <!-- ── HOTEL BANNER ── -->
+  <div id="hotelBanner" style="display:none"></div>
+
+  <!-- ── DAY SELECTOR (daily view) ── -->
+  <div class="day-sel" id="daySel" style="display:none"></div>
+
+  <!-- ── SCROLLABLE BODY ── -->
+  <div class="body">
+    <!-- Planner / Timeline -->
+    <div class="view on" id="view-planner">
+      <div id="tlContainer"></div>
+    </div>
+    <!-- Daily -->
+    <div class="view" id="view-daily">
+      <div id="dailyContainer"></div>
+    </div>
+    <!-- Journal -->
+    <div class="view" id="view-journal">
+      <div class="stats-banner">
+        <h3>總參與場次</h3>
+        <div class="big" id="journalCount">--</div>
+        <p>從 Google Sheets 同步</p>
+      </div>
+      <div id="journalList"><div class="loading"><i class="ti ti-loader-2" style="font-size:24px"></i><br>載入中…</div></div>
+    </div>
+  </div>
+
+  <!-- ── FAB ── -->
+  <button class="fab" id="fabBtn" onclick="openSheet('sheetAddItem')">
+    <i class="ti ti-plus"></i>
+  </button>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- SHEETS (bottom drawers)                   -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <!-- Add / Edit Item -->
+  <div class="overlay" id="sheetAddItem" onclick="overlayClose(event,'sheetAddItem')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title" id="addItemTitle">新增行程</div>
+      <div class="type-row">
+        <button class="type-btn on" data-t="FLIGHT" onclick="selType('FLIGHT')">✈️ 航班</button>
+        <button class="type-btn" data-t="CONCERT" onclick="selType('CONCERT')">🎤 演唱會</button>
+        <button class="type-btn" data-t="CUSTOM" onclick="selType('CUSTOM')">⭐ 自訂</button>
+      </div>
+      <label class="field-label">標題 *</label>
+      <input class="field-input" id="f_title" placeholder="e.g. HKG → HND / 演唱會 Day 1">
+      <div class="fl">
+        <div>
+          <label class="field-label">開始時間</label>
+          <input type="datetime-local" class="field-input" id="f_start">
+        </div>
+        <div>
+          <label class="field-label">時區</label>
+          <select class="field-input" id="f_tz">
+            <option value="Asia/Tokyo">🇯🇵 JST</option>
+            <option value="Asia/Seoul">🇰🇷 KST</option>
+            <option value="Asia/Hong_Kong">🇭🇰 HKT</option>
+            <option value="Asia/Singapore">🇸🇬 SGT</option>
+            <option value="Asia/Taipei">🇹🇼 CST</option>
+            <option value="America/Los_Angeles">🇺🇸 PDT</option>
+            <option value="Europe/London">🇬🇧 BST</option>
+          </select>
+        </div>
+      </div>
+      <!-- Flight extras -->
+      <div class="extra-fields on" id="ex_flight">
+        <div class="fl">
+          <div>
+            <label class="field-label">航班號碼</label>
+            <input class="field-input" id="f_flightno" placeholder="CX 562">
+          </div>
+          <div>
+            <label class="field-label">抵達時間</label>
+            <input type="datetime-local" class="field-input" id="f_end">
+          </div>
+        </div>
+        <label class="field-label">預計報到時間</label>
+        <input type="datetime-local" class="field-input" id="f_checkin">
+      </div>
+      <!-- Concert extras -->
+      <div class="extra-fields" id="ex_concert">
+        <div class="fl">
+          <div>
+            <label class="field-label">入場 (Doors Open)</label>
+            <input type="datetime-local" class="field-input" id="f_doors">
+          </div>
+          <div>
+            <label class="field-label">開演時間</label>
+            <input type="datetime-local" class="field-input" id="f_showstart">
+          </div>
+        </div>
+        <label class="field-label">預計完結</label>
+        <input type="datetime-local" class="field-input" id="f_showend">
+      </div>
+      <label class="field-label">備註</label>
+      <input class="field-input" id="f_note" placeholder="座位、行李重量…">
+      <button class="save-btn" id="saveItemBtn" onclick="saveItem()">
+        <i class="ti ti-check"></i> <span id="saveItemLabel">新增行程</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Hotel Sheet -->
+  <div class="overlay" id="sheetHotel" onclick="overlayClose(event,'sheetHotel')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">住宿資訊</div>
+      <label class="field-label">酒店名稱 *</label>
+      <input class="field-input" id="h_name" placeholder="e.g. 橫濱皇家公園飯店">
+      <div class="fl">
+        <div><label class="field-label">入住</label><input type="datetime-local" class="field-input" id="h_in"></div>
+        <div><label class="field-label">退房</label><input type="datetime-local" class="field-input" id="h_out"></div>
+      </div>
+      <label class="field-label">地址</label>
+      <input class="field-input" id="h_addr" placeholder="飯店地址">
+      <label class="field-label">備註</label>
+      <input class="field-input" id="h_note" placeholder="含早餐, 幾晚…">
+      <button class="save-btn" onclick="saveHotel()"><i class="ti ti-check"></i> 儲存住宿</button>
+    </div>
+  </div>
+
+  <!-- Concert Search Sheet -->
+  <div class="overlay" id="sheetSearch" onclick="overlayClose(event,'sheetSearch')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">搜尋演唱會</div>
+      <div class="search-wrap">
+        <i class="ti ti-search"></i>
+        <input class="search-inp" id="searchInp" placeholder="藝人或演唱會名稱…" oninput="filterSearch(this.value)">
+      </div>
+      <div id="searchResults"></div>
+      <div style="border-top:1px solid var(--border);margin-top:8px;padding-top:10px">
+        <button class="save-btn ghost" onclick="closeSheet('sheetSearch');openSheet('sheetNewConcert')">
+          <i class="ti ti-plus"></i> 手動建立自訂行程
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Concert Sheet -->
+  <div class="overlay" id="sheetNewConcert" onclick="overlayClose(event,'sheetNewConcert')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">新增演唱會行程</div>
+      <label class="field-label">Emoji</label>
+      <div class="emoji-row" id="emojiRow"></div>
+      <label class="field-label">顏色</label>
+      <div class="color-row" id="colorRow"></div>
+      <label class="field-label">行程名稱 *</label>
+      <input class="field-input" id="nc_name" placeholder="e.g. BTS Yet To Come — 橫濱">
+      <label class="field-label">藝人</label>
+      <input class="field-input" id="nc_artist" placeholder="e.g. BTS">
+      <label class="field-label">場館</label>
+      <input class="field-input" id="nc_venue" placeholder="e.g. 日産スタジアム, 橫濱">
+      <div class="fl">
+        <div><label class="field-label">演唱會日期 *</label><input type="datetime-local" class="field-input" id="nc_date"></div>
+        <div>
+          <label class="field-label">時區</label>
+          <select class="field-input" id="nc_tz">
+            <option value="Asia/Tokyo">🇯🇵 JST</option>
+            <option value="Asia/Seoul">🇰🇷 KST</option>
+            <option value="Asia/Hong_Kong">🇭🇰 HKT</option>
+            <option value="Asia/Singapore">🇸🇬 SGT</option>
+            <option value="Asia/Taipei">🇹🇼 CST</option>
+          </select>
+        </div>
+      </div>
+      <button class="save-btn" onclick="saveNewConcert()"><i class="ti ti-plus"></i> 建立行程</button>
+    </div>
+  </div>
+
+  <!-- Gmail Sheet -->
+  <div class="overlay" id="sheetGmail" onclick="overlayClose(event,'sheetGmail')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">Gmail 同步</div>
+      <p style="font-size:12px;color:var(--text-2);line-height:1.7;margin-bottom:14px">
+        授權後，FTour 掃描你的 Gmail，找出演唱會票務確認信、航班 E-ticket 和酒店訂房確認，自動匯入行程。
+      </p>
+      <div id="gmailConnectArea">
+        <button class="save-btn" style="background:#ea4335" onclick="startGmailOAuth()">
+          <i class="ti ti-brand-google"></i> 連接 Google 帳號
+        </button>
+      </div>
+      <div id="gmailSyncStatus" style="display:none;text-align:center;padding:20px;color:var(--text-3);font-size:13px">
+        <i class="ti ti-loader-2" style="font-size:22px"></i><br>掃描 Gmail 中…
+      </div>
+      <div id="gmailResults" style="display:none"></div>
+      <div class="info-box">
+        ⚠️ 需要先在 Google Cloud Console 設定：<br>
+        1. 建立 OAuth 2.0 Client ID（Web application）<br>
+        2. Authorised redirect URI 加入 <code>https://ftour.netlify.app/oauth-callback</code><br>
+        3. 在下方填入你的 Client ID 後儲存<br><br>
+        <label class="field-label">Google Client ID</label>
+        <input class="field-input" id="clientIdInput" placeholder="xxxx.apps.googleusercontent.com" style="margin-bottom:6px">
+        <button class="save-btn" style="margin-top:0" onclick="saveClientId()"><i class="ti ti-device-floppy"></i> 儲存</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /shell -->
+
+<!-- ══════════════════════════════════════════ -->
+<!-- oauth-callback inline (same origin trick) -->
+<!-- This page is loaded in a popup and posts   -->
+<!-- the token back to the opener               -->
+<!-- ══════════════════════════════════════════ -->
+<script>
+// If this page is loaded as /oauth-callback (popup)
+if (location.pathname === '/oauth-callback') {
+  const hash = new URLSearchParams(location.hash.slice(1));
+  const token = hash.get('access_token');
+  if (token && window.opener) {
+    window.opener.postMessage({ type: 'oauth_token', token }, location.origin);
+    document.write('<p style="font-family:sans-serif;padding:20px;color:#4338ca">✅ 授權成功！視窗即將關閉…</p>');
+    setTimeout(() => window.close(), 800);
+  } else {
+    window.opener?.postMessage({ type: 'oauth_error', message: 'No token found' }, location.origin);
+    document.write('<p style="font-family:sans-serif;padding:20px;color:#dc2626">❌ 授權失敗</p>');
+    setTimeout(() => window.close(), 1500);
+  }
+}
+</script>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════ */
+const SHEETS_API = "https://script.google.com/macros/s/AKfycbw5YreMxTtQyaTU6CFZhxIoi5dtknHZQhYL2Wuy023FA3vASFICJCx9u0ULiiVCG9o/exec";
+
+const TZ_ABBR = {
+  "Asia/Tokyo":"JST","Asia/Hong_Kong":"HKT","Asia/Seoul":"KST",
+  "Asia/Taipei":"CST","Asia/Singapore":"SGT",
+  "America/Los_Angeles":"PDT","Europe/London":"BST"
+};
+const tzA = tz => TZ_ABBR[tz] || tz;
+
+const MONTHS = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+const EMOJIS = ["💜","🖤","💗","🩵","🔥","⭐","🌙","🎵","🐰","💎","🌸","🦋"];
+const COLORS = ["#6366f1","#ec4899","#0891b2","#059669","#d97706","#dc2626","#7c3aed","#0ea5e9"];
+
+const CONCERT_DB = [
+  {id:"bts-yk",name:"BTS Yet To Come — 橫濱",artist:"BTS",venue:"日産スタジアム, 橫濱",date:"2025-09-13T18:00:00",tz:"Asia/Tokyo",emoji:"💜",color:"#6366f1"},
+  {id:"bp-sel",name:"BLACKPINK BORN PINK — 首爾",artist:"BLACKPINK",venue:"高尺天空巨蛋, 首爾",date:"2025-11-22T19:00:00",tz:"Asia/Seoul",emoji:"🖤",color:"#ec4899"},
+  {id:"txt-sg",name:"TXT WORLD TOUR — 新加坡",artist:"TXT",venue:"新加坡室內體育館",date:"2025-10-05T19:00:00",tz:"Asia/Singapore",emoji:"🌙",color:"#0891b2"},
+  {id:"svt-hk",name:"SEVENTEEN FOLLOW — 香港",artist:"SEVENTEEN",venue:"啟德體育館, 香港",date:"2026-02-14T19:00:00",tz:"Asia/Hong_Kong",emoji:"💎",color:"#d97706"},
+  {id:"ive-tw",name:"IVE SHOW WHAT I HAVE — 台北",artist:"IVE",venue:"台北小巨蛋",date:"2026-01-18T19:00:00",tz:"Asia/Taipei",emoji:"🌸",color:"#ec4899"},
+  {id:"nj-tk",name:"NewJeans Get Up — 東京",artist:"NewJeans",venue:"東京巨蛋",date:"2025-12-10T18:00:00",tz:"Asia/Tokyo",emoji:"🐰",color:"#059669"},
+];
+
+let state = {
+  concerts: [],
+  activeId: null,
+  curView: "planner",
+  curFilter: "all",
+  curDay: 0,
+  editingItemId: null,
+  curItemType: "FLIGHT",
+  selEmoji: "💜",
+  selColor: "#6366f1",
+  gmailToken: null,
+};
+
+function loadState() {
+  try {
+    const s = localStorage.getItem("ftour_v5");
+    if (s) { const p = JSON.parse(s); state.concerts = p.concerts || []; state.activeId = p.activeId || null; }
+  } catch(e) {}
+  if (!state.concerts.length) {
+    // Demo data
+    state.concerts = [{
+      id:"demo1", name:"BTS Yet To Come — 橫濱", artist:"BTS",
+      venue:"日産スタジアム, 橫濱",
+      concertDate:"2025-09-13T18:00:00+09:00",
+      tz:"Asia/Tokyo", color:"#6366f1", emoji:"💜",
+      hotel:{ name:"橫濱皇家公園飯店", checkIn:"2025-09-11T16:00:00+09:00", checkOut:"2025-09-15T11:00:00+09:00", note:"含早餐 4 晚", source:"GMAIL" },
+      items:[
+        { id:"it1",type:"FLIGHT",title:"HKG → HND",startTime:"2025-09-11T10:30:00+08:00",endTime:"2025-09-11T15:45:00+09:00",tz:"Asia/Hong_Kong",flightNo:"CX 562",checkInTime:"2025-09-11T08:00:00+08:00",note:"行李 25kg",source:"MANUAL" },
+        { id:"it2",type:"CONCERT",title:"🎤 演唱會 Day 1",startTime:"2025-09-13T18:00:00+09:00",tz:"Asia/Tokyo",doorsOpen:"2025-09-13T16:30:00+09:00",showStart:"2025-09-13T18:00:00+09:00",showEnd:"2025-09-13T21:00:00+09:00",note:"Block A, Row 5",source:"MANUAL" },
+        { id:"it3",type:"CONCERT",title:"🎤 演唱會 Day 2",startTime:"2025-09-14T18:00:00+09:00",tz:"Asia/Tokyo",doorsOpen:"2025-09-14T16:30:00+09:00",showStart:"2025-09-14T18:00:00+09:00",showEnd:"2025-09-14T21:00:00+09:00",note:"Block A, Row 5",source:"MANUAL" },
+        { id:"it4",type:"FLIGHT",title:"HND → HKG",startTime:"2025-09-15T09:00:00+09:00",endTime:"2025-09-15T12:30:00+08:00",tz:"Asia/Tokyo",flightNo:"CX 543",checkInTime:"2025-09-15T06:30:00+09:00",note:"",source:"MANUAL" },
+      ]
+    }];
+    state.activeId = "demo1";
+  }
+  if (!state.activeId && state.concerts.length) state.activeId = state.concerts[0].id;
+
+  // Load saved Google Client ID
+  const cid = localStorage.getItem("ftour_gcid");
+  if (cid) document.getElementById("clientIdInput").value = cid;
+}
+
+function saveState() {
+  localStorage.setItem("ftour_v5", JSON.stringify({ concerts: state.concerts, activeId: state.activeId }));
+}
+
+/* ═══════════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════════ */
+const fmt = (iso, tz, opts) => iso ? new Intl.DateTimeFormat("zh-TW",{timeZone:tz,...opts}).format(new Date(iso)) : "";
+const fmtDate = (iso,tz) => fmt(iso,tz,{month:"2-digit",day:"2-digit"});
+const fmtTime = (iso,tz) => fmt(iso,tz,{hour:"2-digit",minute:"2-digit",hour12:false});
+const isoLocal = dt => { if(!dt) return ""; const d=new Date(dt); return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16); };
+const pad = n => String(n).padStart(2,"0");
+
+function getConcert() { return state.concerts.find(c=>c.id===state.activeId); }
+
+function getStatus(concertDate) {
+  const diff = new Date(concertDate) - new Date();
+  if (diff > 30*86400000) return "upcoming";
+  if (diff > 0) return "ongoing";
+  return "past";
+}
+
+function sortItems(items) {
+  return [...items].sort((a,b)=>new Date(a.startTime)-new Date(b.startTime));
+}
+
+function groupByDay(items, tz) {
+  const g = {};
+  for (const it of items) {
+    const k = fmt(it.startTime, tz, {year:"numeric",month:"2-digit",day:"2-digit"});
+    if (!g[k]) g[k] = [];
+    g[k].push(it);
+  }
+  return Object.entries(g).sort(([a],[b])=>a.localeCompare(b));
+}
+
+/* ═══════════════════════════════════════════════════
+   RENDER COUNTDOWN
+═══════════════════════════════════════════════════ */
+let cdInterval = null;
+function renderCD() {
+  const c = getConcert();
+  if (!c) { document.getElementById("cdCard").style.display="none"; return; }
+  document.getElementById("cdCard").style.display="block";
+  document.getElementById("cdArtist").textContent = c.artist || "";
+  document.getElementById("cdArtist").style.color = c.color;
+  document.getElementById("cdName").textContent = c.name;
+  document.getElementById("cdVenue").innerHTML = `<i class="ti ti-map-pin" style="font-size:12px"></i> ${c.venue||""} <span class="tz-pill">${tzA(c.tz)}</span>`;
+
+  if (cdInterval) clearInterval(cdInterval);
+  function tick() {
+    const diff = new Date(c.concertDate) - new Date();
+    const el = document.getElementById("cdNums");
+    if (diff <= 0) {
+      el.innerHTML = `<div class="past-badge">✨ 美好回憶永恆</div>`;
+      clearInterval(cdInterval); return;
+    }
+    const d=Math.floor(diff/86400000), h=Math.floor((diff%86400000)/3600000),
+          m=Math.floor((diff%3600000)/60000), s=Math.floor((diff%60000)/1000);
+    el.innerHTML = [["天",d],["時",h],["分",m],["秒",s]].map(([l,v])=>
+      `<div class="cd-unit"><span class="cd-n" style="color:${c.color}">${pad(v)}</span><span class="cd-l">${l}</span></div>`
+    ).join("");
+  }
+  tick();
+  cdInterval = setInterval(tick, 1000);
+}
+
+/* ═══════════════════════════════════════════════════
+   RENDER HOTEL BANNER
+═══════════════════════════════════════════════════ */
+function renderHotel() {
+  const c = getConcert();
+  const el = document.getElementById("hotelBanner");
+  if (!c?.hotel) { el.style.display="none"; return; }
+  const h = c.hotel;
+  el.style.display = "flex";
+  el.innerHTML = `
+    <i class="ti ti-building" style="font-size:17px;color:#059669;flex-shrink:0"></i>
+    <div style="flex:1;min-width:0">
+      <div class="name">${h.name}</div>
+      <div class="dates">📥 ${h.checkIn?fmtDate(h.checkIn,"Asia/Tokyo"):"-"} → 📤 ${h.checkOut?fmtDate(h.checkOut,"Asia/Tokyo"):"-"}${h.note?` · ${h.note}`:""}</div>
+    </div>
+    ${h.source==="GMAIL"?`<span class="gmail-tag">Gmail</span>`:""}
+    <button class="icon-btn" onclick="openHotelEdit()" style="flex-shrink:0"><i class="ti ti-edit"></i></button>
+  `;
+}
+
+/* ═══════════════════════════════════════════════════
+   RENDER TIMELINE
+═══════════════════════════════════════════════════ */
+const TYPE_CFG = {
+  FLIGHT:  { icon:"ti-plane",    color:"#0891b2", bg:"#e0f2fe", label:"✈️ 航班" },
+  CONCERT: { icon:"ti-music",    color:"#6366f1", bg:"#eef2ff", label:"🎤 演唱會" },
+  CUSTOM:  { icon:"ti-star",     color:"#d97706", bg:"#fef3c7", label:"⭐ 自訂" },
+};
+
+function renderTimeline() {
+  const c = getConcert();
+  const el = document.getElementById("tlContainer");
+  if (!c) { el.innerHTML="<div class='empty'><div class='big-icon'>🎤</div><p>尚無行程，點搜尋演唱會開始</p></div>"; return; }
+  const items = sortItems(c.items || []);
+  if (!items.length) { el.innerHTML="<div class='empty'><div class='big-icon'>📅</div><p>尚無行程，點 + 新增</p></div>"; return; }
+  el.innerHTML = items.map((it, idx) => tlCard(it, idx === items.length-1, c)).join("");
+}
+
+function tlCard(it, isLast, c) {
+  const cfg = TYPE_CFG[it.type] || TYPE_CFG.CUSTOM;
+  const detailHtml = it.type==="FLIGHT" ? `
+    ${it.flightNo?`<span>${it.flightNo}</span>`:""}
+    ${it.checkInTime?`<span><i class="ti ti-luggage" style="font-size:10px"></i> 報到 ${fmtTime(it.checkInTime,it.tz)}</span>`:""}
+    ${it.endTime?`<span><i class="ti ti-clock" style="font-size:10px"></i> 抵達 ${fmtTime(it.endTime,it.tz)} ${tzA(it.tz)}</span>`:""}
+  ` : it.type==="CONCERT" ? `
+    ${it.doorsOpen?`<span><i class="ti ti-door-enter" style="font-size:10px"></i> 入場 ${fmtTime(it.doorsOpen,it.tz)}</span>`:""}
+    ${it.showStart?`<span><i class="ti ti-player-play" style="font-size:10px"></i> 開演 ${fmtTime(it.showStart,it.tz)}</span>`:""}
+    ${it.showEnd?`<span><i class="ti ti-player-stop" style="font-size:10px"></i> 完結 ${fmtTime(it.showEnd,it.tz)}</span>`:""}
+  ` : "";
+  return `
+    <div class="tl-row">
+      <div class="tl-left">
+        <div class="tl-date">${fmtDate(it.startTime,it.tz)}</div>
+        <div class="tl-time">${fmtTime(it.startTime,it.tz)}</div>
+        <div class="tl-tz" style="color:${c.color}">${tzA(it.tz)}</div>
+      </div>
+      <div class="tl-axis">
+        <div class="tl-dot" style="background:${cfg.color}"><i class="ti ${cfg.icon}"></i></div>
+        ${!isLast?`<div class="tl-line"></div>`:""}
+      </div>
+      <div class="tl-card">
+        <div class="card-top">
+          <span class="type-pill" style="color:${cfg.color};background:${cfg.bg}">${cfg.label}</span>
+          ${it.source==="GMAIL"?`<span class="gmail-tag">Gmail</span>`:""}
+          <div class="card-actions">
+            <button class="icon-btn" onclick="openEditItem('${it.id}')"><i class="ti ti-edit"></i></button>
+            <button class="icon-btn del" onclick="deleteItem('${it.id}')"><i class="ti ti-trash"></i></button>
+          </div>
+        </div>
+        <div class="card-title">${it.title}</div>
+        ${detailHtml?`<div class="card-detail">${detailHtml}</div>`:""}
+        ${it.note?`<div class="card-note">${it.note}</div>`:""}
+      </div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════════════
+   RENDER DAILY VIEW
+═══════════════════════════════════════════════════ */
+function renderDailySelector() {
+  const c = getConcert();
+  const el = document.getElementById("daySel");
+  if (!c || state.curView !== "daily") { el.style.display="none"; return; }
+  el.style.display = "flex";
+  const days = groupByDay(sortItems(c.items||[]), c.tz);
+  if (!days.length) { el.innerHTML=""; return; }
+  el.innerHTML = days.map(([key,items],i)=>{
+    const hasC = items.some(it=>it.type==="CONCERT");
+    const hasF = items.some(it=>it.type==="FLIGHT");
+    const icon = hasC?"🎤":hasF?"✈️":"📌";
+    const parts = key.split("/");
+    const label = parts.slice(1).join("/");
+    return `<button class="day-tab ${i===state.curDay?"on":""}" onclick="switchDay(${i})" style="${i===state.curDay?`border-color:${c.color};color:${c.color};background:#eef2ff`:""}">
+      <div class="dt">${label}</div><div class="di">${icon}</div>
+    </button>`;
+  }).join("");
+}
+
+function renderDaily() {
+  const c = getConcert();
+  const el = document.getElementById("dailyContainer");
+  if (!c) { el.innerHTML="<div class='empty'><p style='color:var(--text-3)'>尚無行程</p></div>"; return; }
+  const days = groupByDay(sortItems(c.items||[]), c.tz);
+  if (!days.length) { el.innerHTML="<div class='empty'><p style='color:var(--text-3)'>尚無行程</p></div>"; return; }
+  const [key, dayItems] = days[Math.min(state.curDay, days.length-1)] || ["",[]];
+  const hasC = dayItems.find(it=>it.type==="CONCERT");
+  const hasF = dayItems.find(it=>it.type==="FLIGHT");
+  el.innerHTML = `
+    <div class="hl-card" style="border-color:${c.color}30">
+      <div class="hl-title" style="color:${c.color}">✦ 今日 Highlight</div>
+      ${c.hotel?`<div class="hl-row"><i class="ti ti-building" style="font-size:15px;color:#059669"></i><span>${c.hotel.name}</span></div>`:""}
+      ${hasF?`<div class="hl-row"><i class="ti ti-plane" style="font-size:15px;color:#0891b2"></i><span>${hasF.title}</span><span class="sub">${fmtTime(hasF.startTime,hasF.tz)} ${tzA(hasF.tz)}</span></div>`:""}
+      ${hasC?`<div class="hl-row"><i class="ti ti-music" style="font-size:15px;color:${c.color}"></i><span style="font-weight:700">${hasC.title}</span>${hasC.showStart?`<span class="sub">開演 ${fmtTime(hasC.showStart,hasC.tz)}</span>`:""}</div>`:""}
+      ${!c.hotel&&!hasF&&!hasC?`<div style="font-size:12px;color:var(--text-3)">自由活動日 ✌️</div>`:""}
+    </div>
+    <div class="ag-label">當日行程</div>
+    ${dayItems.length ? dayItems.map(it => agendaCard(it, c)).join("") : `<div style="font-size:12px;color:var(--text-3)">這天暫無行程</div>`}
+  `;
+}
+
+function agendaCard(it, c) {
+  const cfg = TYPE_CFG[it.type] || TYPE_CFG.CUSTOM;
+  const sub = it.type==="FLIGHT"
+    ? [it.checkInTime?`報到 ${fmtTime(it.checkInTime,it.tz)}`:"", it.flightNo, it.endTime?`抵達 ${fmtTime(it.endTime,it.tz)} ${tzA(it.tz)}`:""].filter(Boolean).join(" · ")
+    : it.type==="CONCERT"
+    ? [it.doorsOpen?`入場 ${fmtTime(it.doorsOpen,it.tz)}`:"", it.showStart?`開演 ${fmtTime(it.showStart,it.tz)}`:"", it.showEnd?`完結 ${fmtTime(it.showEnd,it.tz)}`:"", it.note].filter(Boolean).join(" · ")
+    : it.note || "";
+  return `<div class="ag-row">
+    <div class="ag-time">${fmtTime(it.startTime,it.tz)}<br><span style="font-size:9px;color:${c.color}">${tzA(it.tz)}</span></div>
+    <div class="ag-bar" style="background:${cfg.color}"></div>
+    <div class="ag-card">
+      <div class="ag-inner"><i class="ti ${cfg.icon}" style="font-size:14px;color:${cfg.color}"></i><span style="font-size:13px;font-weight:700;flex:1">${it.title}</span><button class="icon-btn" onclick="openEditItem('${it.id}')"><i class="ti ti-edit"></i></button></div>
+      ${sub?`<div class="ag-sub">${sub}</div>`:""}
+    </div>
+  </div>`;
+}
+
+/* ═══════════════════════════════════════════════════
+   RENDER PROJECT DROPDOWN
+═══════════════════════════════════════════════════ */
+function renderDD() {
+  const el = document.getElementById("ddList");
+  el.innerHTML = state.concerts.map(c=>`
+    <div class="dd-row">
+      <button class="dd-item" style="color:${c.color}" onclick="switchConcert('${c.id}')">${c.emoji} ${c.name}</button>
+      <button class="icon-btn del" onclick="deleteConcert('${c.id}')"><i class="ti ti-trash"></i></button>
+    </div>
+  `).join("");
+  const active = getConcert();
+  if (active) document.getElementById("projLabel").textContent = `${active.emoji} ${active.artist} — ${active.venue?.split(",")[1]?.trim()||active.name.split("—")[1]?.trim()||active.name}`;
+}
+
+/* ═══════════════════════════════════════════════════
+   RENDER JOURNAL (Google Sheets)
+═══════════════════════════════════════════════════ */
+async function loadJournal() {
+  try {
+    const res = await fetch(SHEETS_API);
+    const data = await res.json();
+    data.sort((a,b)=>new Date(b.Date)-new Date(a.Date));
+    document.getElementById("journalCount").textContent = data.length+" 場";
+    document.getElementById("journalList").innerHTML = data.map(item=>{
+      const d = new Date(item.Date);
+      return `<div class="jcard">
+        <div class="date-box"><div class="mon">${MONTHS[d.getMonth()]}</div><div class="dy">${d.getDate()}</div></div>
+        <div class="info">
+          <div class="title">${item.Title||""}</div>
+          <div class="venue"><i class="ti ti-map-pin" style="font-size:12px"></i> ${item.Venue||""}${item.Note?` <span style="opacity:.5">| ${item.Note}</span>`:""}</div>
+        </div>
+      </div>`;
+    }).join("");
+  } catch(e) {
+    document.getElementById("journalList").innerHTML = `<div class="loading">載入失敗，請確認 API 連線</div>`;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   SEARCH SHEET
+═══════════════════════════════════════════════════ */
+function renderSearchResults(q="") {
+  const filtered = CONCERT_DB.filter(c=>
+    c.name.toLowerCase().includes(q.toLowerCase()) ||
+    c.artist.toLowerCase().includes(q.toLowerCase())
+  );
+  document.getElementById("searchResults").innerHTML = filtered.length
+    ? filtered.map(c=>`
+        <button class="concert-result" onclick="addFromDB('${c.id}')">
+          <span style="font-size:22px">${c.emoji}</span>
+          <div style="flex:1;text-align:left">
+            <div style="font-size:13px;font-weight:700;color:${c.color}">${c.name}</div>
+            <div style="font-size:11px;color:var(--text-3)">${c.venue} · ${c.date.slice(0,10)}</div>
+          </div>
+          <i class="ti ti-chevron-right" style="color:var(--text-3)"></i>
+        </button>`).join("")
+    : `<div style="text-align:center;padding:24px;color:var(--text-3);font-size:13px">找不到相關演唱會</div>`;
+}
+function filterSearch(q) { renderSearchResults(q); }
+
+/* ═══════════════════════════════════════════════════
+   EMOJI / COLOR PICKERS
+═══════════════════════════════════════════════════ */
+function renderPickers() {
+  document.getElementById("emojiRow").innerHTML = EMOJIS.map(e=>
+    `<button class="emoji-btn ${e===state.selEmoji?"on":""}" onclick="selEmoji('${e}')">${e}</button>`
+  ).join("");
+  document.getElementById("colorRow").innerHTML = COLORS.map(c=>
+    `<button class="color-dot ${c===state.selColor?"on":""}" style="background:${c}" onclick="selColor('${c}')"></button>`
+  ).join("");
+}
+function selEmoji(e) { state.selEmoji=e; renderPickers(); }
+function selColor(c) { state.selColor=c; renderPickers(); }
+
+/* ═══════════════════════════════════════════════════
+   ACTIONS
+═══════════════════════════════════════════════════ */
+function switchView(v) {
+  state.curView = v;
+  document.querySelectorAll(".nav-tab").forEach(t=>{t.classList.toggle("on", t.dataset.view===v);});
+  document.querySelectorAll(".view").forEach(el=>{ el.classList.toggle("on", el.id==="view-"+v); });
+  const showFilter = v==="planner"||v==="daily";
+  document.getElementById("filterBar").style.display = showFilter?"flex":"none";
+  document.getElementById("cdCard").style.display = showFilter?"block":"none";
+  document.getElementById("hotelBanner").style.display = showFilter&&getConcert()?.hotel?"flex":"none";
+  document.getElementById("fabBtn").style.display = v==="journal"?"none":"flex";
+  document.getElementById("daySel").style.display = v==="daily"?"flex":"none";
+  if (v==="journal") loadJournal();
+  if (v==="daily") { renderDailySelector(); renderDaily(); }
+  if (v==="planner") renderTimeline();
+}
+
+function setFilter(f) {
+  state.curFilter = f;
+  document.querySelectorAll(".chip").forEach(c=>{
+    const isOn = c.dataset.filter===f;
+    c.classList.toggle("on", isOn);
+  });
+  // Filter concerts in dropdown
+  renderDD();
+}
+
+function switchConcert(id) {
+  state.activeId = id;
+  state.curDay = 0;
+  saveState();
+  document.getElementById("projDD").classList.remove("on");
+  renderAll();
+}
+
+function deleteConcert(id) {
+  if (!confirm("刪除此行程？")) return;
+  state.concerts = state.concerts.filter(c=>c.id!==id);
+  if (state.activeId===id) state.activeId = state.concerts[0]?.id||null;
+  saveState(); renderAll();
+}
+
+function addFromDB(dbId) {
+  const db = CONCERT_DB.find(c=>c.id===dbId);
+  if (!db) return;
+  const c = { id:`c_${Date.now()}`, name:db.name, artist:db.artist, venue:db.venue, concertDate:new Date(db.date).toISOString(), tz:db.tz, color:db.color, emoji:db.emoji, items:[], hotel:null };
+  state.concerts.push(c);
+  state.activeId = c.id;
+  saveState(); closeSheet("sheetSearch"); renderAll();
+}
+
+function switchDay(i) {
+  state.curDay = i;
+  renderDailySelector();
+  renderDaily();
+}
+
+function toggleDD() {
+  document.getElementById("projDD").classList.toggle("on");
+}
+document.addEventListener("click", e=>{
+  if (!document.getElementById("projWrap").contains(e.target))
+    document.getElementById("projDD").classList.remove("on");
+});
+
+/* ─── Item CRUD ─── */
+let itemEditId = null;
+function openEditItem(id) {
+  const c = getConcert();
+  const it = c?.items?.find(i=>i.id===id);
+  if (!it) return;
+  itemEditId = id;
+  document.getElementById("addItemTitle").textContent = "編輯行程";
+  document.getElementById("saveItemLabel").textContent = "儲存更改";
+  document.getElementById("f_title").value = it.title||"";
+  document.getElementById("f_start").value = isoLocal(it.startTime);
+  document.getElementById("f_tz").value = it.tz||"Asia/Tokyo";
+  document.getElementById("f_flightno").value = it.flightNo||"";
+  document.getElementById("f_end").value = isoLocal(it.endTime);
+  document.getElementById("f_checkin").value = isoLocal(it.checkInTime);
+  document.getElementById("f_doors").value = isoLocal(it.doorsOpen);
+  document.getElementById("f_showstart").value = isoLocal(it.showStart);
+  document.getElementById("f_showend").value = isoLocal(it.showEnd);
+  document.getElementById("f_note").value = it.note||"";
+  selType(it.type||"FLIGHT");
+  openSheet("sheetAddItem");
+}
+
+function selType(t) {
+  state.curItemType = t;
+  document.querySelectorAll(".type-btn").forEach(b=>{
+    b.classList.toggle("on", b.dataset.t===t);
+  });
+  document.getElementById("ex_flight").classList.toggle("on", t==="FLIGHT");
+  document.getElementById("ex_concert").classList.toggle("on", t==="CONCERT");
+}
+
+function saveItem() {
+  const c = getConcert(); if (!c) return;
+  const title = document.getElementById("f_title").value.trim();
+  if (!title) { document.getElementById("f_title").style.borderColor="var(--red)"; return; }
+  const t = state.curItemType;
+  const item = {
+    id: itemEditId || `it_${Date.now()}`,
+    type: t, title, source:"MANUAL",
+    startTime: toISO(document.getElementById("f_start").value),
+    tz: document.getElementById("f_tz").value,
+    note: document.getElementById("f_note").value,
+    ...(t==="FLIGHT"?{
+      flightNo: document.getElementById("f_flightno").value,
+      endTime: toISO(document.getElementById("f_end").value),
+      checkInTime: toISO(document.getElementById("f_checkin").value),
+    }:{}),
+    ...(t==="CONCERT"?{
+      doorsOpen: toISO(document.getElementById("f_doors").value),
+      showStart: toISO(document.getElementById("f_showstart").value),
+      showEnd: toISO(document.getElementById("f_showend").value),
+    }:{}),
+  };
+  if (itemEditId) {
+    c.items = c.items.map(i=>i.id===itemEditId?item:i);
+  } else {
+    c.items.push(item);
+  }
+  c.items = sortItems(c.items);
+  itemEditId = null;
+  document.getElementById("addItemTitle").textContent = "新增行程";
+  document.getElementById("saveItemLabel").textContent = "新增行程";
+  saveState(); closeSheet("sheetAddItem"); renderAll();
+}
+function toISO(v) { return v ? new Date(v).toISOString() : undefined; }
+
+function deleteItem(id) {
+  if (!confirm("刪除此行程？")) return;
+  const c = getConcert(); if (!c) return;
+  c.items = c.items.filter(i=>i.id!==id);
+  saveState(); renderAll();
+}
+
+/* ─── Hotel ─── */
+function openHotelEdit() {
+  const h = getConcert()?.hotel || {};
+  document.getElementById("h_name").value = h.name||"";
+  document.getElementById("h_in").value = isoLocal(h.checkIn);
+  document.getElementById("h_out").value = isoLocal(h.checkOut);
+  document.getElementById("h_addr").value = h.address||"";
+  document.getElementById("h_note").value = h.note||"";
+  openSheet("sheetHotel");
+}
+function saveHotel() {
+  const c = getConcert(); if (!c) return;
+  c.hotel = {
+    name: document.getElementById("h_name").value.trim(),
+    checkIn: toISO(document.getElementById("h_in").value),
+    checkOut: toISO(document.getElementById("h_out").value),
+    address: document.getElementById("h_addr").value,
+    note: document.getElementById("h_note").value,
+    source: "MANUAL",
+  };
+  saveState(); closeSheet("sheetHotel"); renderAll();
+}
+
+/* ─── New Concert ─── */
+function saveNewConcert() {
+  const name = document.getElementById("nc_name").value.trim();
+  const date = document.getElementById("nc_date").value;
+  if (!name || !date) return;
+  const c = {
+    id:`c_${Date.now()}`, name, items:[], hotel:null,
+    artist: document.getElementById("nc_artist").value.trim(),
+    venue: document.getElementById("nc_venue").value.trim(),
+    concertDate: new Date(date).toISOString(),
+    tz: document.getElementById("nc_tz").value,
+    emoji: state.selEmoji, color: state.selColor,
+  };
+  state.concerts.push(c);
+  state.activeId = c.id;
+  saveState(); closeSheet("sheetNewConcert"); renderAll();
+}
+
+/* ─── Client ID ─── */
+function saveClientId() {
+  const cid = document.getElementById("clientIdInput").value.trim();
+  localStorage.setItem("ftour_gcid", cid);
+  alert("✅ Client ID 已儲存！請重新點擊「連接 Google 帳號」");
+}
+
+/* ═══════════════════════════════════════════════════
+   GMAIL OAUTH (REAL)
+═══════════════════════════════════════════════════ */
+async function startGmailOAuth() {
+  const clientId = localStorage.getItem("ftour_gcid") || document.getElementById("clientIdInput").value.trim();
+  if (!clientId || clientId === "xxxx.apps.googleusercontent.com") {
+    alert("⚠️ 請先填寫並儲存你的 Google Client ID（見下方說明）");
+    return;
+  }
+  const redirectUri = window.location.origin + window.location.pathname;
+  const params = new URLSearchParams({
+    client_id: clientId,
+    redirect_uri: redirectUri,
+    response_type: "token",
+    scope: "https://www.googleapis.com/auth/gmail.readonly",
+    prompt: "consent",
+  });
+  const popup = window.open(`https://accounts.google.com/o/oauth2/v2/auth?${params}`, "ftour_gmail", "width=480,height=600,left=200,top=80");
+  document.getElementById("gmailConnectArea").style.display = "none";
+  document.getElementById("gmailSyncStatus").style.display = "block";
+
+  const handler = async (e) => {
+    if (e.origin !== window.location.origin) return;
+    if (e.data?.type === "oauth_token") {
+      window.removeEventListener("message", handler);
+      state.gmailToken = e.data.token;
+      document.getElementById("gmailBtn").classList.add("gmail-connected");
+      await doGmailSync(e.data.token);
+    }
+    if (e.data?.type === "oauth_error") {
+      window.removeEventListener("message", handler);
+      document.getElementById("gmailSyncStatus").innerHTML = `<span style="color:var(--red)">❌ 授權失敗</span>`;
+      document.getElementById("gmailConnectArea").style.display = "block";
+    }
+  };
+  window.addEventListener("message", handler);
+
+  // Fallback: poll popup URL (same origin)
+  const poll = setInterval(() => {
+    try {
+      if (!popup || popup.closed) { clearInterval(poll); return; }
+      const hash = popup.location.hash;
+      if (hash && hash.includes("access_token")) {
+        clearInterval(poll);
+        const p = new URLSearchParams(hash.slice(1));
+        const token = p.get("access_token");
+        if (token) {
+          window.dispatchEvent(new MessageEvent("message",{data:{type:"oauth_token",token},origin:location.origin}));
+          popup.close();
         }
+      }
+    } catch(e) { /* cross-origin, ignore */ }
+  }, 500);
+  setTimeout(()=>clearInterval(poll), 120000);
+}
 
-        function renderList(items) {
-            const container = document.getElementById('list-container');
-            const totalDisplay = document.getElementById('total-count');
-            
-            // Sort by date descending
-            items.sort((a, b) => new Date(b.Date) - new Date(a.Date));
-            
-            totalDisplay.textContent = items.length + " 場";
-            container.innerHTML = "";
+async function doGmailSync(token) {
+  document.getElementById("gmailSyncStatus").innerHTML = `<i class="ti ti-loader-2" style="font-size:22px"></i><br>掃描 Gmail 中…`;
+  try {
+    const base = "https://www.googleapis.com/gmail/v1/users/me";
+    const h = { Authorization: `Bearer ${token}` };
+    const results = { flights:[], hotels:[], concerts:[] };
+    const queries = [
+      {q:"subject:(flight confirmation OR e-ticket OR itinerary OR 機票 OR 航班)", cat:"flights"},
+      {q:"subject:(hotel reservation OR booking confirmation OR 酒店 OR check-in)", cat:"hotels"},
+      {q:"subject:(concert ticket OR ticketing OR 演唱會 OR 票務確認)", cat:"concerts"},
+    ];
+    for (const {q,cat} of queries) {
+      const list = await (await fetch(`${base}/messages?q=${encodeURIComponent(q)}&maxResults=8`,{headers:h})).json();
+      if (!list.messages) continue;
+      for (const msg of list.messages.slice(0,5)) {
+        const m = await (await fetch(`${base}/messages/${msg.id}?format=metadata&metadataHeaders=Subject,Date,From`,{headers:h})).json();
+        const hd = m.payload?.headers||[];
+        const subject = hd.find(x=>x.name==="Subject")?.value||"";
+        const date = hd.find(x=>x.name==="Date")?.value||"";
+        const from = hd.find(x=>x.name==="From")?.value||"";
+        results[cat].push({ id:msg.id, subject, date, from });
+      }
+    }
+    renderGmailResults(results);
+  } catch(e) {
+    document.getElementById("gmailResults").style.display="block";
+    document.getElementById("gmailResults").innerHTML=`<div style="color:var(--red);font-size:12px">掃描失敗：${e.message}</div>`;
+    document.getElementById("gmailSyncStatus").style.display="none";
+  }
+}
 
-            items.forEach(item => {
-                const dateObj = new Date(item.Date);
-                const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-                
-                const card = `
-                    <div class="concert-card">
-                        <div class="date-box">
-                            <div class="month">${months[dateObj.getMonth()]}</div>
-                            <div class="day">${dateObj.getDate()}</div>
-                        </div>
-                        <div class="info">
-                            <div class="title">${item.Title}</div>
-                            <div class="venue">
-                                <i class="ti ti-map-pin"></i> ${item.Venue}
-                                ${item.Note ? `<span style="margin-left:8px; opacity:0.6">| ${item.Note}</span>` : ''}
-                            </div>
-                        </div>
-                    </div>
-                `;
-                container.insertAdjacentHTML('beforeend', card);
-            });
-        }
+function renderGmailResults(results) {
+  document.getElementById("gmailSyncStatus").style.display="none";
+  document.getElementById("gmailResults").style.display="block";
+  const cats = [["flights","✈️ 航班"],["hotels","🏨 住宿"],["concerts","🎤 演唱會"]];
+  let html = "";
+  for (const [cat, label] of cats) {
+    if (!results[cat]?.length) continue;
+    html += `<div style="font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:1px;margin-bottom:7px;margin-top:12px">${label}</div>`;
+    html += results[cat].map(it=>`
+      <div class="gmail-result-row">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${it.subject.slice(0,50)}</div>
+          <div style="font-size:11px;color:var(--text-3)">${it.from.slice(0,40)}</div>
+        </div>
+        <button class="import-btn" onclick="importGmailItem('${cat}','${it.subject.replace(/'/g,"\\'")}','${it.date}')">匯入</button>
+      </div>`).join("");
+  }
+  if (!html) html = `<div style="text-align:center;padding:16px;color:var(--text-3);font-size:13px">未找到相關確認信</div>`;
+  document.getElementById("gmailResults").innerHTML = html;
+}
 
-        window.onload = fetchConcerts;
-    </script>
+function importGmailItem(cat, subject, date) {
+  const c = getConcert(); if (!c) return;
+  if (cat==="hotels") {
+    c.hotel = { name: subject.slice(0,50), checkIn: new Date(date).toISOString(), checkOut: undefined, note:"自 Gmail 匯入", source:"GMAIL" };
+  } else {
+    c.items.push({
+      id:`gm_${Date.now()}`, source:"GMAIL",
+      type: cat==="flights"?"FLIGHT":"CONCERT",
+      title: subject.slice(0,50),
+      startTime: new Date(date).toISOString(),
+      tz: c.tz, note:"自 Gmail 匯入",
+    });
+    c.items = sortItems(c.items);
+  }
+  saveState(); renderAll();
+  alert("✅ 已匯入！請在行程中補充詳細時間資料。");
+}
+
+/* ═══════════════════════════════════════════════════
+   SHEET OPEN / CLOSE
+═══════════════════════════════════════════════════ */
+function openSheet(id) {
+  if (id==="sheetAddItem") {
+    itemEditId = null;
+    document.getElementById("addItemTitle").textContent = "新增行程";
+    document.getElementById("saveItemLabel").textContent = "新增行程";
+    ["f_title","f_flightno","f_note"].forEach(i=>document.getElementById(i).value="");
+    ["f_start","f_end","f_checkin","f_doors","f_showstart","f_showend"].forEach(i=>document.getElementById(i).value="");
+    selType("FLIGHT");
+  }
+  if (id==="sheetSearch") renderSearchResults();
+  if (id==="sheetNewConcert") renderPickers();
+  document.getElementById(id).classList.add("on");
+}
+function closeSheet(id) { document.getElementById(id).classList.remove("on"); }
+function overlayClose(e, id) { if (e.target===e.currentTarget) closeSheet(id); }
+
+/* ═══════════════════════════════════════════════════
+   RENDER ALL
+═══════════════════════════════════════════════════ */
+function renderAll() {
+  renderDD();
+  renderCD();
+  renderHotel();
+  if (state.curView==="planner") renderTimeline();
+  if (state.curView==="daily") { renderDailySelector(); renderDaily(); }
+}
+
+/* ═══════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════ */
+window.addEventListener("DOMContentLoaded", ()=>{
+  loadState();
+  renderAll();
+  switchView("planner");
+});
+</script>
 </body>
 </html>
